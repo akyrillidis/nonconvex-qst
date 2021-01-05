@@ -4,28 +4,26 @@ layout: default
 
 We propose the exploration of new theory and algorithms for quantum system characterization. With more qubits, the volume of generated data outgrows our computational capacity of classical tomography methods, posing major challenges. The goal of this project is to close this gap, by investigating ways to accelerate such protocols, with guarantees.
 
-This project focuses on benchmarking and testing quantum computation systems, through efficient, robust and provable quantum state tomography, as well as novel noise-robust validation and certification tools for quantum computing. This research proposes to investigate new theoretical and practical approaches, via the following three paths: $i)$ by provably distributing computations in a non-convex way for large-scale quantum state tomography, $ii)$ by robustifying state of the art validation methods using robust optimization and techniques, and finally, $iii)$ by designing efficient and robust schemes for validating and certifying specific experimentally-relevant quantum operations. We propose to evaluate the theoretical studies with experiments on available prototypes of quantum processors, in order to assess their practicality in real scenaria.
+This project focuses on benchmarking and testing quantum computation systems, through efficient, robust and provable quantum state tomography, as well as novel noise-robust validation and certification tools for quantum computing. This research proposes to investigate new theoretical and practical approaches, via the following three paths: $$i)$$ by provably distributing computations in a non-convex way for large-scale quantum state tomography (QST), $$ii)$$ by robustifying state of the art validation methods using robust optimization and techniques, and finally, $$iii)$$ by designing efficient and robust schemes for validating and certifying specific experimentally-relevant quantum operations. We propose to evaluate the theoretical studies with experiments on available prototypes of quantum processors, in order to assess their practicality in real scenaria.
 
+Results by this projects include: 
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+- [Projected FGD for QST](./another-page.html).
+- [Momentum-Inspired FGD for QST](./another-page.html).
 
-[Link to another page](./another-page.html).
+For reproducility, we provide real quantum datasets:
 
-There should be whitespace between paragraphs.
+- [Real QST data](./another-page.html).
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
-
-# Header 1
-
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
-
-## Header 2
+### Publications
 
 > This is a blockquote following a header.
 >
 > When something is important enough, you do it even if the odds are not in your favor.
 
-### Header 3
+
+
+Text can be **bold**, _italic_, or ~~strikethrough~~.
 
 ```js
 // Javascript code with syntax highlighting.
