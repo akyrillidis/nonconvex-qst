@@ -17,9 +17,11 @@ For reproducility, we provide real quantum datasets:
 
 ### Publications
 
-> This is a blockquote following a header.
+> Anastasios Kyrillidis, Amir Kalev, Dohyung Park, Srinadh Bhojanapalli, Constantine Caramanis, Sujay Sanghavi, *``Provable compressed sensing quantum state tomography via non-convex methods''*, npj Quantum Information volume 4, Article number: 36 (2018).
 >
-> When something is important enough, you do it even if the odds are not in your favor.
+> Mitchell Roddenberry, Santiago Segarra, Anastasios Kyrillidis, *''Rank-One Measurements of Low-Rank PSD Matrices Have Small Feasible Sets''*, Arxiv Preprint, arXiv preprint arXiv:2012.09768 (2020).
+>
+> Anastasios Kyrillidis, George Kollias, Amir Kalev, Junhyung Lyle Kim, Tayo Ajayi, *''Fast quantum state tomographyvia momentum-inspired non-convex programming''*, on-going work, (2020).
 
 
 
