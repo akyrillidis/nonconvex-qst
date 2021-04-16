@@ -63,6 +63,22 @@ U_{i+1} &= U_{i} - \eta \nabla f(U_i U_i^\dagger) \cdot U_i \\\\
 \end{align}
 Here, $$\mathcal{A}^\dagger: \mathbb{R}^m \rightarrow \mathbb{C}^{d \times d}$$ is the adjoint of $$\mathcal{A}$$, defined as $$\mathcal{A}^\dagger = \sum_{i=1}^m x_i A_i.$$ $$\eta$$ is a hyperparameter called step size or learning rate. This method is called "$$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent" ($$\texttt{FGD}$$), and was utilized to solve the non-convex objective function in Eq. \eqref{eq:factored-obj}, (surprisingly) with provable gaurantees.[^kyrillidis2018provable]
 
+## Momentum-inspired Factored Gradient Descent
+Momentum is one of the de facto techniques to achieve acceleration in gradient descent type of algorithms. Acceleration methods exist in various forms, including Polyak's momentum, Nesterov's acceleration, classical momentum, etc. They end up behaving pretty similarly, and we will not get into the detail of different acceleration methods in this post. For interested readers, I recommend this [blog post](https://jlmelville.github.io/mize/nesterov.html) by James Melville.
+
+A common feature accross acceleration methods is that, with proper hyper-parameter tuning, they can provide accelerated convergence rate with virtually no additional computation. This is exactly the motivation of the $$\texttt{MiFGD}$$ algorithm we propose for solving the non-convex objective in Eq. \eqref{eq:factored-obj}, and the algorithm proceeds as follows:
+\begin{align}
+\label{eq:mifgd} \tag{5}
+U_{i+1} &= Z_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(Z_i Z_i^\dagger) - y\right) \cdot Z_i, \\\\
+Z_{i+1} &= U_{i+1} + \mu \left(U_{i+1} - U_i\right). 
+\end{align}
+
+Here, $$Z_i \in \mathbb{C}^{d\times r}$$ is a rectangular matrix (with the same dimension as $$U_i$$) which accumulates the "momentum" of the iterates $$U_i$$. $$\mu$$ is the momentum parameter that balances the weight between the previous estimate $$U_i$$ and the current estimate $$U_{i+1}.$$
+
+While the $$\texttt{MiFGD}$$ algorithm in Eq. \eqref{eq:mifgd} looks quite similar to $$\texttt{FGD}$$ in Eq. \eqref{eq:fgd}, it complicates the convergence theory significantly. This is because the two-step momentum procedure has to be considered, on top of the fact that the objective function in Eq. \eqref{eq:factored-obj} is non-convex. We will not get into the details of the convergence thoery here; interested readers are referred to our paper.[^kim2021fast] We finish this section with an informal theorem that illustrates the convergence behavior of $$\texttt{MiFGD}$$:
+
+**Theorem 1** ($$\texttt{MiFGD}$$ convergence rate (informal)). Assume that $$\mathcal{A}(\cdot)$$ satisfies the RIP for some constant $$0 < \delta_{2r} <1$$. Let $$y = \mathcal{A}(\rho^\star)$$ denote the set of measurements, by measuring the quantum density matrix $$\rho^\star$$. Given a good initialization point $$U_0$$, and setting step size $$\eta$$ and momentum $$\mu$$ appropriately, $$\texttt{MiFGD}$$ converges with a linear rate to a region—with radius that depends on $$O(\mu)$$—around the global solution $$\rho^\star$$. 
+
 
 
 
