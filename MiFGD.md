@@ -18,7 +18,7 @@ To address the first bottleneck, prior information is often assumed and leverage
 To give a concrete example, in the figure below, real (top) and imaginary (bottom) parts of four different states are shown: $$i)$$ $$\texttt{GHZ}$$ state, $$ii)$$ $$\texttt{GHZminus}$$ state, $$iii)$$ $$\texttt{Hadamard}$$ state, and $$iv)$$ $$\texttt{Random}$$ state; for the mathematical description of the above states, refer to our paper. [^kim2021fast] As can be seen, for $$\texttt{GHZ}$$ and $$\texttt{GHZminus}$$ states, only four corners of the real parts have non-zero entries. Therefore, the density matrices of these states are both of low-rank and sparse. If these kinds of "structures" are smartly leveraged, one can sometimes confine the search space of density matrices greatly, leading to less number of measurements required for successful tomography results. 
 
 
-{{< figure src="/assets/img/state-plots.png" title="From left to right: $\texttt{GHZ}$, $\texttt{GHZminus}$, $\texttt{Hadamard}$, and $\texttt{Random}$ states. All states are in 4-qubit system. " width="100%">}}
+{{< figure src="/assets/img/state-plots.png" title="From left to right: $$\texttt{GHZ}$$, $$\texttt{GHZminus}$$, $$\texttt{Hadamard}$$, and $$\texttt{Random}$$ states. All states are in 4-qubit system. " width="100%">}}
 
 
 With regards to the second bottleneck, variants of gradient descent convex solvers were proposed under synthetic scenarios. [^goncalves2016projected] [^bolduc2017projected] [^shang2017superfast] [^hu2019reconstructing] However, due to the exponentially increasing space of density matrices, these methods often can be only applied to relatively small system, on top of relying on special-purpose hardwares and proper distributed system designs.[^hou2016full]  
