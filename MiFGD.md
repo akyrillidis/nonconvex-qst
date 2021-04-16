@@ -21,6 +21,11 @@ To give a concrete example, in the figure below, real (top) and imaginary (botto
 {{< figure src="/assets/img/state-plots.png" title="From left to right: $\texttt{GHZ}$, $\texttt{GHZminus}$, $\texttt{Hadamard}$, and $\texttt{Random}$ states. All states are in 4-qubit system. " width="100%">}}
 
 
+With regards to the second bottleneck, variants of gradient descent convex solvers were proposed under synthetic scenarios. [^goncalves2016projected] [^bolduc2017projected] [^shang2017superfast] [^hu2019reconstructing] However, due to the exponentially increasing space of density matrices, these methods often can be only applied to relatively small system, on top of relying on special-purpose hardwares and proper distributed system designs.[^hou2016full]  
+
+On the contrary, non-convex optimization methods can perform much faster. It was recently shown that one can formulate compressed sensing QST as a non-convex problem,[^kyrillidis2018provable] which can be solved with rigorous convergence guarantees, allowing density matrix estimation in a large system. A relevant result can be seen in the **Results** section below, where we compare our proposed (accelerated) non-convex method with [convex methods from $$\texttt{Qiskit}$$](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html).  
+
+
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
 
 [^kalev2015quantum]: A. Kalev, R. Kosut, and I. Deutsch. Quantum tomography protocols with positivity are compressed sensing protocols. NPJ Quantum Information, 1:15018, 2015.
