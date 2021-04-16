@@ -18,7 +18,7 @@ To address the first bottleneck, prior information is often assumed and leverage
 To give a concrete example, in the figure below, real (top) and imaginary (bottom) parts of four different states are shown: $$i)$$ $$\texttt{GHZ}$$ state, $$ii)$$ $$\texttt{GHZminus}$$ state, $$iii)$$ $$\texttt{Hadamard}$$ state, and $$iv)$$ $$\texttt{Random}$$ state; for the mathematical description of the above states, refer to our paper. [^kim2021fast] As can be seen, for $$\texttt{GHZ}$$ and $$\texttt{GHZminus}$$ states, only four corners of the real parts have non-zero entries. Therefore, the density matrices of these states are both of low-rank and sparse. If these kinds of "structures" are smartly leveraged, one can sometimes confine the search space of density matrices greatly, leading to less number of measurements required for successful tomography results. 
 
 
-{{< figure src="/assets/img/state-plots.png" title="From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system. " width="100%">}}
+{{< figure src="./assets/img/state-plots.png" title="From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system. " width="100%">}}
 
 
 With regards to the second bottleneck, variants of gradient descent convex solvers were proposed under synthetic scenarios. [^goncalves2016projected] [^bolduc2017projected] [^shang2017superfast] [^hu2019reconstructing] However, due to the exponentially increasing space of density matrices, these methods often can be only applied to relatively small system, on top of relying on special-purpose hardwares and proper distributed system designs.[^hou2016full]  
@@ -33,9 +33,8 @@ We consider the reconstruction of a low-rank density matrix $$\rho^\star \in \ma
 \begin{align}
 \label{eq:objective} \tag{1}
 \min_{\rho \in \mathbb{C}^{d \times d}}
-\quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \\\\
-\text{subject to}
-\quad& \rho \succeq 0, ~\texttt{rank}(\rho) \leq r.
+\quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \quad
+\text{subject to} \quad \rho \succeq 0, ~\texttt{rank}(\rho) \leq r.
 \end{align}
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
