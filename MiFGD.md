@@ -85,6 +85,8 @@ In this section, we review some of the experimental results. First, we obtain re
 
 
 ![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
+{:.image-caption}
+*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
 
 
 Above figure summarizes the performance of $$\texttt{MiFGD}$$. In the legends, $$\mu^\star$$ is the momentum parameter proposed by our theory; however, it should be noted that $$\texttt{MiFGD}$$ converges with larger momentum values than $$\mu^\star$$, in particular featuring a steep dive to convergence for the largest value of $$\mu$$ we tested. Moreover, the above figure also highlights the universality of our approach: its performance is oblivious to the quantum state reconstructed, as long as it satisfies purity or it is close to a pure state. Our method does not require any additional structure assumptions in the quantum state. 
@@ -92,10 +94,14 @@ Above figure summarizes the performance of $$\texttt{MiFGD}$$. In the legends, $
 It should be noted that quantum data are inherently noisy. To highlight the level of noise existing in real quantum data, in the figure below, we also plot the performance of $$\texttt{MiFGD}$$ in the same setting using simulated quantum data from IBM's [QASM](https://github.com/Qiskit/openqasm) simulator:  
 
 ![MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/simulator-data.png)
+{:.image-caption}
+*MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
 
 We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$\|\hat{\rho} - \rho^\star\|_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
 
 ![Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM.](/assets/img/qpu-vs-qasm.png)
+{:.image-caption}
+*Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM.*
 
 #### Performance comparison with QST methods in $\texttt{Qiskit}$
 Now, we compare the performance of $$\texttt{MiFGD}$$ with [QST methods](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html) from [$$\texttt{Qiskit}$$](https://qiskit.org/), again using IBM's QASM simulator. $$\texttt{Qiskit}$$ provides two QST methods: $$i)$$ the $$\texttt{CVXPY}$$ method which relies on convex optimiztion, and $$ii)$$ the $$\texttt{lstsq}$$ which ruses least-squares fitting. Both methods solve the following full tomography problem (not compressed sensing QST problem):
@@ -113,6 +119,8 @@ We consider the following cases: $$\texttt{GHZ}(n), \texttt{Hadamard}(n),$$ and 
 The results are shown in the figure below:
 
 ![Performance comparison with Qiskit methods. All experiments are performed on a 13” Macbook Pro with 2.3 GHz Quad-Core Intel Core i7 CPU and 32 GB RAM.](/assets/img/qiskit-comparison-plot.png)
+{:.image-caption}
+*Performance comparison with Qiskit methods. All experiments are performed on a 13” Macbook Pro with 2.3 GHz Quad-Core Intel Core i7 CPU and 32 GB RAM.*
 
 Some notable remarks: $$i)$$ For small-scale scenarios ($$n=3, 4$$), $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ attain almost perfect fidelity, while being comparable or faster than $$\texttt{MiFGD}$$. $$ii)$$The difference in performance becomes apparent from $$n = 6$$ and on: while $$\texttt{MiFGD}$$ attains $$98$$% fidelity in less than $$5$$ seconds, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ require up to hundreds of seconds to find a good solution. Finally, while $$\texttt{MiFGD}$$ gets to high-fidelity solutions in seconds for $$n = 7, 8$$, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ methods require more than 12 hours execution time; however, their execution never ended, since the memory usage exceeded the system's available memory.
 
@@ -123,6 +131,8 @@ Next, we compare the performance of $$\texttt{MiFGD}$$ compare with neural-netwo
 We report the fidelity of the reconstruction as a function of elapsed training time for $$n = 3, 4$$ in the figure below for all methods provided by $$\texttt{Qucumber}$$: $$\texttt{PRWF}, \texttt{CWF}$$, and $$\texttt{DM}$$. Note that Time (secs) on $$x$$-axis is plotted with log-scale.
 
 ![Performance comparison with Qucumber methods. All experiments are performed on a NVidia GeForce GTX 1080 TI with 11GB RAM.](/assets/img/nn-comparison-plot.png)
+{:.image-caption}
+*Performance comparison with Qucumber methods. All experiments are performed on a NVidia GeForce GTX 1080 TI with 11GB RAM.*
 
 We observe that for all cases, $$\texttt{Qucumber}$$ methods are orders of magnitude slower than $$\texttt{MiFGD}$$.
 For the $$\texttt{Hadamard}(n)$$ and $$\texttt{Random}(n)$$, reaching reasonable fidelities is significantly slower for both $$\texttt{CWF}$$ and $$\texttt{DM},$$ while $$\texttt{PRWF}$$ hardly improves its performance throughout the training. For the $$\texttt{GHZ}$$ case, $$\texttt{CWF}$$ and $$\texttt{DM}$$ also shows *non-monotonic* behaviors: even after a few thousands of seconds, fidelities have not "stabilized", while $$\texttt{PRWF}$$ stabilizes in very low fidelities. In comparison, $$\texttt{MiFGD}$$ is several orders of magnitude faster than both $$\texttt{CWF}$$ and $$\texttt{DM}$$ and fidelity smoothly increases to comparable or higher values. What is notable is the scalability of $$\texttt{MiFGD}$$ compared to neural network approaches for higher values of $$n$$. 
@@ -130,6 +140,8 @@ For the $$\texttt{Hadamard}(n)$$ and $$\texttt{Random}(n)$$, reaching reasonable
 To see this more clearly, in the table below, we report the final fidelities (within the $$3$$ hour time window), and reported times. We see that for many cases, $$\texttt{CWF}$$ and $$\texttt{DM}$$ methods did not complete a single iterations within $$3$$ hours. 
 
 ![Comparison with Qucumber methods.](/assets/img/nn-comparison.png)
+{:.image-caption}
+*Comparison with Qucumber methods.*
 
 #### The effect of parallelization in $$\texttt{MiFGD}$$
 We also study the effect of paralleization in running $$\texttt{MiFGD}$$. We parallelize the iteration step across a number of processes, that can be either distributed and network connected, or sharing memory in a multicore environment. Our approach is based on [Message Passing Interface (MPI)](https://en.wikipedia.org/wiki/Message_Passing_Interface) specification. We assign to each process a subset of the measurement labels consumed by the parallel computation. At each step, a process first computes the local gradient using a subset of measurements. These local gradients are then communicated so that they can be added up to form the full gradient, and the full gradient is shared with each worker.
@@ -137,6 +149,8 @@ We also study the effect of paralleization in running $$\texttt{MiFGD}$$. We par
 In our first round of experiments, we investigate the scalability of the parallelization approach. We vary the number $$p$$ of parallel processes $$(p=1, 2, 4, 8, 16, 32, 48, 64, 80, 96)$$, collect timings for reconstructing $$\texttt{GHZ}(4)$$, $$\texttt{Random}(6)$$ and $$\texttt{GHZminus}(8)$$ states, and report speedups $$T_p/T_1$$ we gain from $$\texttt{MiFGD}$$ in the figure bloew (left panel). We observe that the benefits of parallelization are pronounced for bigger problems (here: $$n=8$$ qubits) and maximum scalability results when we use all physical cores ($48$$ in our platform).
 
 ![Effect of parallelization of MiFGD. Left: scalability of parallelization of MiFGD for different number of processors. Middle: fidelity versus time consued for different number of processors on Hadamard(10) state. Right: The effect of momentum on Hadamard(10) state with 48 processors](/assets/img/parallel.png)
+{:.image-caption}
+*Effect of parallelization of MiFGD. Left: scalability of parallelization of MiFGD for different number of processors. Middle: fidelity versus time consued for different number of processors on Hadamard(10) state. Right: The effect of momentum on Hadamard(10) state with 48 processors.*
 
 Further, we move to larger problems ($$n=10$$ qubits: reporting on reconstructing $$\texttt{Hadamard}(10)$$ state) and focus on the effect parallelization to achieving a given level of fidelity in reconstruction. In the middle panel of the figure above, we illustrate the fidelity as a function of the time spent in the iteration loop of $$\texttt{MiFGD}$$ for ($$p=8, 16, 32, 48, 64$$): we observe the smooth path to convergence in all $$p$$ counts which again minimizes compute time for $$p=48$$. Note that in this case we use $$10$$% of the complete measurements, and the momenutum parameter $$\mu=\frac{1}{4}$$.
 
