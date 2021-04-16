@@ -25,6 +25,11 @@ With regards to the second bottleneck, variants of gradient descent convex solve
 
 On the contrary, non-convex optimization methods can perform much faster. It was recently shown that one can formulate compressed sensing QST as a non-convex problem,[^kyrillidis2018provable] which can be solved with rigorous convergence guarantees, allowing density matrix estimation in a large system. A relevant result can be seen in the **Results** section below, where we compare our proposed (accelerated) non-convex method with [convex methods from $$\texttt{Qiskit}$$](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html).  
 
+In this work, we consider the setup where $$n$$-qubit state is close to a pure state, thus its density matrix is of low-rank. We introduce an accelerated non-convex algorithm with provable gaurantees, which we call $$\texttt{MiFGD}$$, short for "$$\texttt{M}$$omentum $$\texttt{i}$$nspired $$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent."
+
+## Problem setup
+We consider the reconstruction of a low-rank density matrix $$\rho^\star \in \mathbb{C}^{d \times d}$$ on a $$n$$-qubit Hilbert space, where $$d=2^n$$, through the following $$\ell_2$$-norm reconstruction objective:
+
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
 
