@@ -58,7 +58,7 @@ where $$U^\dagger$$ denotes the [adjoint](https://en.wikipedia.org/wiki/Conjugat
 A common approach is to use gradient descent on $$U$$, which iterates as follows:
 \begin{align}
 \label{eq:fgd} \tag{4}
-U_{i+1} &= U_{i} - \eta \nabla f(U_i U_i^\dagger) \cdot U_i \\\\
+U_{i+1} &= U_{i} - \eta \nabla f(U_i U_i^\dagger) \cdot U_i 
 &= U_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(U_i U_i^\dagger) - y\right) \cdot U_i.
 \end{align}
 Here, $$\mathcal{A}^\dagger: \mathbb{R}^m \rightarrow \mathbb{C}^{d \times d}$$ is the adjoint of $$\mathcal{A}$$, defined as $$\mathcal{A}^\dagger = \sum_{i=1}^m x_i A_i.$$ $$\eta$$ is a hyperparameter called step size or learning rate. This method is called "$$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent" ($$\texttt{FGD}$$), and was utilized to solve the non-convex objective function in Eq. \eqref{eq:factored-obj}, (surprisingly) with provable gaurantees.[^kyrillidis2018provable]
@@ -70,7 +70,7 @@ A common feature accross acceleration methods is that, with proper hyper-paramet
 \begin{align}
 \label{eq:mifgd} \tag{5}
 U_{i+1} &= Z_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(Z_i Z_i^\dagger) - y\right) \cdot Z_i, \quad 
-Z_{i+1} &= U_{i+1} + \mu \left(U_{i+1} - U_i\right). 
+Z_{i+1} = U_{i+1} + \mu \left(U_{i+1} - U_i\right). 
 \end{align}
 
 Here, $$Z_i \in \mathbb{C}^{d\times r}$$ is a rectangular matrix (with the same dimension as $$U_i$$) which accumulates the "momentum" of the iterates $$U_i$$. $$\mu$$ is the momentum parameter that balances the weight between the previous estimate $$U_i$$ and the current estimate $$U_{i+1}.$$
