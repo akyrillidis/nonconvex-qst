@@ -19,7 +19,8 @@ To give a concrete example, in the figure below, real (top) and imaginary (botto
 
 
 ![From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system.](/assets/img/state-plots.png)
-
+{:.image-caption}
+*From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system.*
 
 With regards to the second bottleneck, variants of gradient descent convex solvers were proposed under synthetic scenarios. [^goncalves2016projected] [^bolduc2017projected] [^shang2017superfast] [^hu2019reconstructing] However, due to the exponentially increasing space of density matrices, these methods often can be only applied to relatively small system, on top of relying on special-purpose hardwares and proper distributed system designs.[^hou2016full]  
 
