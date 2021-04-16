@@ -79,7 +79,20 @@ While the $$\texttt{MiFGD}$$ algorithm in Eq. \eqref{eq:mifgd} looks quite simil
 
 **Theorem 1** ($$\texttt{MiFGD}$$ convergence rate (informal)). Assume that $$\mathcal{A}(\cdot)$$ satisfies the RIP for some constant $$0 < \delta_{2r} <1$$. Let $$y = \mathcal{A}(\rho^\star)$$ denote the set of measurements, by measuring the quantum density matrix $$\rho^\star$$. Given a good initialization point $$U_0$$, and setting step size $$\eta$$ and momentum $$\mu$$ appropriately, $$\texttt{MiFGD}$$ converges with a linear rate to a region—with radius that depends on $$O(\mu)$$—around the global solution $$\rho^\star$$. 
 
+## Results
+In this section, we review some of the experimental results. First, we obtain real quantum data from IBM's Quantum Processing Unit (QPU) by realizing two types of quantum states: $$\texttt{GHZminus}(n)$$ and $$\texttt{Hadamard}(n)$$, for $$n = 6, 8$$, where $$n$$ is the number of qubits. In quantum computing, obtaining measurements itself is not a trivial process, which we will not get into the detail in this post. Yet, we highlight that, in the following plots, we only use $$20$$% of the measurements that are information-theoretically compelete, i.e. we sample $$m = 0.2 \cdot d^2$$ measurements (recall that we are working on compressed sensing QST setting). We compare the effect of different momentum parameters in the figure below, where the accuracy of the estimated density matrix $$\widehat{\rho}$$ is measured with the true density matrix $$\rho^\star$$ in terms of the squared Frobenius norm, i.e. $$||\widehat{\rho} - \rho^\star||_F^2$$: 
 
+{{< figure src="ibm-data.png" title="MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8)." width="60%">}}
+
+Above figure summarizes the performance of $$\texttt{MiFGD}$$. In the legends, $$\mu^\star$$ is the momentum parameter proposed by our theory; however, it should be noted that $$\texttt{MiFGD}$$ converges with larger momentum values than $$\mu^\star$$, in particular featuring a steep dive to convergence for the largest value of $\mu$ we tested. Moreover, the above figure also highlights the universality of our approach: its performance is oblivious to the quantum state reconstructed, as long as it satisfies purity or it is close to a pure state. Our method does not require any additional structure assumptions in the quantum state. 
+
+It should be noted that quantum data are inherently noisy. To highlight the level of noise existing in real quantum data, in the figure below, we also plot the performance of $$\texttt{MiFGD}$$ in the same setting using simulated quantum data from IBM's [QASM](https://github.com/Qiskit/openqasm) simulator:  
+
+{{< figure src="simulator-data.png" title="MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8)." width="60%">}}
+
+We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$|| \hat{\rho} - \rho^\star||_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
+
+{{< figure src="qpu-vs-qasm.png" title="Final fidelity of MiFGD} comparison using real quantum data from IBM's QPU and simulated quantum data using QASM." width="100%">}}
 
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
