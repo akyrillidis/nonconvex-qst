@@ -114,6 +114,21 @@ The results are shown in the figure below:
 Some notable remarks: $$i)$$ For small-scale scenarios ($$n=3, 4$$), $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ attain almost perfect fidelity, while being comparable or faster than $$\texttt{MiFGD}$$. $$ii)$$The difference in performance becomes apparent from $$n = 6$$ and on: while $$\texttt{MiFGD}$$ attains $$98$$% fidelity in less than $$5$$ seconds, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ require up to hundreds of seconds to find a good solution. Finally, while $$\texttt{MiFGD}$$ gets to high-fidelity solutions in seconds for $$n = 7, 8$$, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ methods require more than 12 hours execution time; however, their execution never ended, since the memory usage exceeded the system's available memory.
 
 
+#### Performance comparison with neural-network QST using $$\texttt{Qucumber}$$
+Next, we compare the performance of $$\texttt{MiFGD}$$ compare with neural-network based QST methods, proivded by [$$\texttt{Qucumber}$$](https://qucumber.readthedocs.io/en/stable/). We consider the same quantum states as with $$\texttt{Qiskit}$$ experiments, but here we consider the case where only $$50$$% of the measurements are available. 
+
+We report the fidelity of the reconstruction as a function of elapsed training time for $$n = 3, 4$$ in the figure below for all methods provided by $$\texttt{Qucumber}$$: $$\texttt{PRWF}, \texttt{CWF}$$, and $$\texttt{DM}$$. Note that Time (secs) on $$x$$-axis is plotted with log-scale.
+
+{{< figure src="/assets/img/nn-comparison-plot.png" title="Performance comparison with Qucumber methods. All experiments are performed on a NVidia GeForce GTX 1080 TI with 11GB RAM." width="100%">}}
+
+We observe that for all cases, $$\texttt{Qucumber}$$ methods are orders of magnitude slower than $$\texttt{MiFGD}$$.
+For the $$\texttt{Hadamard}(n)$$ and $$\texttt{Random}(n)$$, reaching reasonable fidelities is significantly slower for both $$\texttt{CWF}$$ and $$\texttt{DM},$$ while $$\texttt{PRWF}$$ hardly improves its performance throughout the training. For the $$\texttt{GHZ}$$ case, $$\texttt{CWF}$$ and $$\texttt{DM}$$ also shows *non-monotonic* behaviors: even after a few thousands of seconds, fidelities have not "stabilized", while $$\texttt{PRWF}$$ stabilizes in very low fidelities. In comparison, $$\texttt{MiFGD}$$ is several orders of magnitude faster than both $$\texttt{CWF}$$ and $$\texttt{DM}$$ and fidelity smoothly increases to comparable or higher values. What is notable is the scalability of $$\texttt{MiFGD}$$ compared to neural network approaches for higher values of $$n$$. 
+
+To see this more clearly, in the table below, we report the final fidelities (within the $$3$$ hour time window), and reported times. We see that for many cases, $$\texttt{CWF}$$ and $$\texttt{DM}$$ methods did not complete a single iterations within $$3$$ hours. 
+
+{{< figure src="/assets/img/nn-comparison.png" title="Comparison with Qucumber methods." width="70%">}}
+
+
 
 
 
