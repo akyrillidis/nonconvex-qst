@@ -30,6 +30,13 @@ In this work, we consider the setup where $$n$$-qubit state is close to a pure s
 ## Problem setup
 We consider the reconstruction of a low-rank density matrix $$\rho^\star \in \mathbb{C}^{d \times d}$$ on a $$n$$-qubit Hilbert space, where $$d=2^n$$, through the following $$\ell_2$$-norm reconstruction objective:
 
+\begin{align}
+\label{eq:objective} \tag{1}
+\min_{\rho \in \mathbb{C}^{d \times d}}
+\quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \\\\
+\text{subject to}
+\quad& \rho \succeq 0, ~\texttt{rank}(\rho) \leq r.
+\end{align}
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
 
