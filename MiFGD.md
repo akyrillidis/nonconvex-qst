@@ -69,7 +69,7 @@ Momentum is one of the de facto techniques to achieve acceleration in gradient d
 A common feature accross acceleration methods is that, with proper hyper-parameter tuning, they can provide accelerated convergence rate with virtually no additional computation. This is exactly the motivation of the $$\texttt{MiFGD}$$ algorithm we propose for solving the non-convex objective in Eq. \eqref{eq:factored-obj}, and the algorithm proceeds as follows:
 \begin{align}
 \label{eq:mifgd} \tag{5}
-U_{i+1} &= Z_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(Z_i Z_i^\dagger) - y\right) \cdot Z_i, \\\\
+U_{i+1} &= Z_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(Z_i Z_i^\dagger) - y\right) \cdot Z_i, \quad 
 Z_{i+1} &= U_{i+1} + \mu \left(U_{i+1} - U_i\right). 
 \end{align}
 
