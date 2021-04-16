@@ -94,6 +94,30 @@ We see a similar trend with the result using real quantum data from IBM's QPU. H
 
 {{< figure src="/assets/img/qpu-vs-qasm.png" title="Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM." width="100%">}}
 
+#### Performance comparison with QST methods in $\texttt{Qiskit}$
+Now, we compare the performance of $$\texttt{MiFGD}$$ with [QST methods](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html) from [$$\texttt{Qiskit}$$](https://qiskit.org/), again using IBM's QASM simulator. $$\texttt{Qiskit}$$ provides two QST methods: $$i)$$ the $$\texttt{CVXPY}$$ method which relies on convex optimiztion, and $$ii)$$ the $$\texttt{lstsq}$$ which ruses least-squares fitting. Both methods solve the following full tomography problem (not compressed sensing QST problem):
+
+\begin{align}
+ \min_{\rho \in \mathbb{C}^{d \times d}}
+ \quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \quad 
+ \text{subject to}
+ \quad & \rho \succeq 0, ~\texttt{Tr}(\rho) = 1.
+\end{align}
+
+We note that $$\texttt{MiFGD}$$ is not restricted to "tall" $$U$$ scenarios to encode PSD and rank constraints: even without rank constraints, one could still exploit the matrix decomposition $$\rho = UU^\dagger$$ to avoid the PSD projection, $$\rho \succeq 0$$, where $$U \in \mathbb{C}^{d \times d}$$.
+
+We consider the following cases: $$\texttt{GHZ}(n), \texttt{Hadamard}(n),$$ and $$\texttt{Random}(n)$$ for $$n = 3, \dots, 8$$. 
+The results are shown in the figure below:
+
+{{< figure src="/assets/img/qiskit-comparison-plot.png" title="Performance comparison with Qiskit methods. All experiments are performed on a 13” Macbook Pro with 2.3 GHz Quad-Core Intel Core i7 CPU and 32 GB RAM." width="100%">}}
+
+Some notable remarks: $$i)$$ For small-scale scenarios ($$n=3, 4$$), $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ attain almost perfect fidelity, while being comparable or faster than $$\texttt{MiFGD}$$. $$ii)$$The difference in performance becomes apparent from $$n = 6$$ and on: while $$\texttt{MiFGD}$$ attains $$98$$% fidelity in less than $$5$$ seconds, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ require up to hundreds of seconds to find a good solution. Finally, while $$\texttt{MiFGD}$$ gets to high-fidelity solutions in seconds for $$n = 7, 8$$, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ methods require more than 12 hours execution time; however, their execution never ended, since the memory usage exceeded the system's available memory.
+
+
+
+
+
+
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
 
