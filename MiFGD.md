@@ -92,7 +92,7 @@ It should be noted that quantum data are inherently noisy. To highlight the leve
 
 We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$|| \hat{\rho} - \rho^\star||_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
 
-{{< figure src="qpu-vs-qasm.png" title="Final fidelity of MiFGD} comparison using real quantum data from IBM's QPU and simulated quantum data using QASM." width="100%">}}
+{{< figure src="qpu-vs-qasm.png" title="Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM." width="100%">}}
 
 
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
