@@ -90,7 +90,7 @@ It should be noted that quantum data are inherently noisy. To highlight the leve
 
 {{< figure src="simulator-data.png" title="MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8)." width="60%">}}
 
-We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$|| \hat{\rho} - \rho^\star||_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
+We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$\|\hat{\rho} - \rho^\star\|_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
 
 {{< figure src="/assets/img/qpu-vs-qasm.png" title="Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM." width="100%">}}
 
