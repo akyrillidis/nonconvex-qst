@@ -9,7 +9,7 @@ This blog post is about my recent work on quantum state tomography using (accele
 
 Quantum state tomography (QST) is one of the main procedures to identify the nature of imperfections in quantum processing unit (QPU) implementation. High-level procedure is to measure the quantum system, estimate the density matrix using the measured data, and analyze the "fit" between the estimated density matrix and the true density matrix.
 
-QST is generally not scalable due to two bottlenecks: $i)$ large data has to be collected to perform tomography; and $ii)$ the space of density matrices grows exponentially, from which the one that is consistent with the data has to be found.
+QST is generally not scalable due to two bottlenecks: $$i)$$ large data has to be collected to perform tomography; and $$ii)$$ the space of density matrices grows exponentially, from which the one that is consistent with the data has to be found.
 
 To address the first bottleneck, prior information is often assumed and leveraged to reduce the number of data required. For example, in compressed sensing QST, [^gross2010quantum] [^kalev2015quantum]  it assumes that the density matrix is of low-rank. Similarly, in neural network QST, the wavefunctions are assumed to be real and positive. [^torlai2018neural] [^torlai2019machine] [^beach2019qucumber]
 
