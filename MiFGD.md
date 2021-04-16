@@ -41,6 +41,28 @@ Here, $$y \in \mathbb{R}^m$$ is the measured data through quantum computer or si
 
 As mentioned earlier, we focus on _compressed sensing quantum state tomography_ setting, where the number of measured data $$m$$ is much smaller than the problem dimension $$O(d^2)$$. Compressed sensing is a powerful optimization framework developed mainly by [Emmanuel Candès](https://statweb.stanford.edu/~candes/), [Justin Romberg](https://jrom.ece.gatech.edu/), [Terence Tao](https://www.math.ucla.edu/~tao/) and [David Donoho](https://web.stanford.edu/dept/statistics/cgi-bin/donoho/), and requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
 
+\begin{align}
+\label{eq:rip} \tag{2}
+(1 - \delta_r) \cdot  || X ||_F^2 \leq || \mathcal{A}(X) ||_2^2 \leq (1 + \delta_r) \cdot ||X||_F^2.
+\end{align}
+
+Intuitively, the above RIP assumption states that the sensing matrices $$\mathcal{A}(\cdot)$$ only "marginally" changes the norm of the matrix $$X$$.
+
+Going back to the main optimization problem in Eq. \eqref{eq:objective}, instead of solving it as is, we propose to solve a factorized version of it, following recent work [^kyrillidis2018provable]:
+\begin{align}
+\label{eq:factored-obj} \tag{3}
+  \min_{U \in \mathbb{C}^{d \times r}} f(UU^\dagger) := \tfrac{1}{2} || \mathcal{A} (UU^\dagger) - y ||_2^2,
+\end{align}
+where $$U^\dagger$$ denotes the [adjoint](https://en.wikipedia.org/wiki/Conjugate_transpose) of $$U$$. The motivation is rather clear: in the original objective function in Eq. \eqref{eq:objective}, the density matrix $$\rho$$ is represented as a $$d \times d$$ Hermitian matrix, and due to the (non-convex) $$\texttt{rank}(\cdot)$$ constraint, some method to project onto the set of low-rank matrices is required. Instead, we work in the space of the factors $$U \in \mathbb{C}^{d \times r}$$, and by taking an outer-product, the $$\texttt{rank}(\cdot)$$ constraint and the PSD constraint $$\rho \succeq 0$$ are automatically satisfied, leading to the non-convex formulation in Eq. \eqref{eq:factored-obj}. But how do we solve such problem?
+
+A common approach is to use gradient descent on $$U$$, which iterates as follows:
+\begin{align}
+\label{eq:fgd} \tag{4}
+U_{i+1} &= U_{i} - \eta \nabla f(U_i U_i^\dagger) \cdot U_i \\\\
+&= U_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(U_i U_i^\dagger) - y\right) \cdot U_i.
+\end{align}
+Here, $$\mathcal{A}^\dagger: \mathbb{R}^m \rightarrow \mathbb{C}^{d \times d}$$ is the adjoint of $$\mathcal{A}$$, defined as $$\mathcal{A}^\dagger = \sum_{i=1}^m x_i A_i.$$ $$\eta$$ is a hyperparameter called step size or learning rate. This method is called "$$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent" ($$\texttt{FGD}$$), and was utilized to solve the non-convex objective function in Eq. \eqref{eq:factored-obj}, (surprisingly) with provable gaurantees.[^kyrillidis2018provable]
+
 
 
 
