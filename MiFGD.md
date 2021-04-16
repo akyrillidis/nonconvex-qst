@@ -128,6 +128,16 @@ To see this more clearly, in the table below, we report the final fidelities (wi
 
 {{< figure src="/assets/img/nn-comparison.png" title="Comparison with Qucumber methods." width="70%">}}
 
+#### The effect of parallelization in $$\texttt{MiFGD}$$
+We also study the effect of paralleization in running $$\texttt{MiFGD}$$. We parallelize the iteration step across a number of processes, that can be either distributed and network connected, or sharing memory in a multicore environment. Our approach is based on [Message Passing Interface (MPI)](https://en.wikipedia.org/wiki/Message_Passing_Interface) specification. We assign to each process a subset of the measurement labels consumed by the parallel computation. At each step, a process first computes the local gradient using a subset of measurements. These local gradients are then communicated so that they can be added up to form the full gradient, and the full gradient is shared with each worker.
+
+In our first round of experiments, we investigate the scalability of the parallelization approach. We vary the number $$p$$ of parallel processes $$(p=1, 2, 4, 8, 16, 32, 48, 64, 80, 96)$$, collect timings for reconstructing $$\texttt{GHZ}(4)$$, $$\texttt{Random}(6)$$ and $$\texttt{GHZminus}(8)$$ states, and report speedups $$T_p/T_1$$ we gain from $$\texttt{MiFGD}$$ in the figure bloew (left panel). We observe that the benefits of parallelization are pronounced for bigger problems (here: $$n=8$$ qubits) and maximum scalability results when we use all physical cores ($48$$ in our platform).
+
+{{< figure src="/assets/img/parallel.png" title="Effect of parallelization of MiFGD. Left: scalability of parallelization of MiFGD for different number of processors. Middle: fidelity versus time consued for different number of processors on Hadamard(10) state. Right: The effect of momentum on Hadamard(10) state with 48 processors." width="100%">}}
+
+Further, we move to larger problems ($$n=10$$ qubits: reporting on reconstructing $$\texttt{Hadamard}(10)$$ state) and focus on the effect parallelization to achieving a given level of fidelity in reconstruction. In the middle panel of the figure above, we illustrate the fidelity as a function of the time spent in the iteration loop of $$\texttt{MiFGD}$$ for ($$p=8, 16, 32, 48, 64$$): we observe the smooth path to convergence in all $$p$$ counts which again minimizes compute time for $$p=48$$. Note that in this case we use $$10$$% of the complete measurements, and the momenutum parameter $$\mu=\frac{1}{4}$$.
+
+Finally, in the right panel of the figure above, we fix the number of processes to $$p=48$$, in order to minimize compute time and increase the percentage of used measurements to $$20$$% of the complete measurements available for $$\texttt{Hadamard}(10)$$. We vary the momentum parameter from $$\mu=0$$ (no acceleration) to $$\mu=\frac{1}{4}$$, and confirm that we indeed get faster convergence times in the latter case while the fidelity value remains the same (i.e. coinciding upper plateau value in the plots). We can also compare with the previous fidelity versus time plot, where the same $$\mu$$ but half the measurements are consumed: more measurements translate to faster convergence times (plateau is reached roughly $$25$$% faster; compare the green line with the yellow line in the previous plot).
 
 
 
