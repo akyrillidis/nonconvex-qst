@@ -37,6 +37,13 @@ We consider the reconstruction of a low-rank density matrix $$\rho^\star \in \ma
 \text{subject to} \quad \rho \succeq 0, ~\texttt{rank}(\rho) \leq r.
 \end{align}
 
+Here, $$y \in \mathbb{R}^m$$ is the measured data through quantum computer or simulation, and $$\mathcal{A}(\cdot): \mathbb{C}^{d \times d} \rightarrow \mathbb{R}^m$$ is the linear sensing map. The sensing map relates the density matrix $$\rho$$ to the measurements through [Born rule](https://en.wikipedia.org/wiki/Born_rule): $$\left( \mathcal{A}(\rho) \right)_i = \text{Tr}(A_i \rho),$$ where $$A_i \in \mathbb{C}^{d \times d},~i=1, \dots, m$$ are the sensing matrices. From the objective function above, we see two constraints: $$i)$$ the density matrix $$\rho$$ is a positive semidefinite matrix (which is a convex constraint), and $$ii)$$ the rank of the density matrix is less than $$r$$ (which is a non-convex constraint). 
+
+As mentioned earlier, we focus on _compressed sensing quantum state tomography_ setting, where the number of measured data $$m$$ is much smaller than the problem dimension $$O(d^2)$$. Compressed sensing is a powerful optimization framework developed mainly by [Emmanuel Candès](https://statweb.stanford.edu/~candes/), [Justin Romberg](https://jrom.ece.gatech.edu/), [Terence Tao](https://www.math.ucla.edu/~tao/) and [David Donoho](https://web.stanford.edu/dept/statistics/cgi-bin/donoho/), and requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
+
+
+
+
 [^gross2010quantum]: D. Gross, Y.-K. Liu, S. Flammia, S. Becker, and J. Eisert. Quantum state tomography via compressed sensing. Physical review letters, 105(15):150401, 2010.
 
 [^kalev2015quantum]: A. Kalev, R. Kosut, and I. Deutsch. Quantum tomography protocols with positivity are compressed sensing protocols. NPJ Quantum Information, 1:15018, 2015.
