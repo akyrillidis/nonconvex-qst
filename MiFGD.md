@@ -82,7 +82,9 @@ While the $$\texttt{MiFGD}$$ algorithm in Eq. \eqref{eq:mifgd} looks quite simil
 ## Results
 In this section, we review some of the experimental results. First, we obtain real quantum data from IBM's Quantum Processing Unit (QPU) by realizing two types of quantum states: $$\texttt{GHZminus}(n)$$ and $$\texttt{Hadamard}(n)$$, for $$n = 6, 8$$, where $$n$$ is the number of qubits. In quantum computing, obtaining measurements itself is not a trivial process, which we will not get into the detail in this post. Yet, we highlight that, in the following plots, we only use $$20$$% of the measurements that are information-theoretically compelete, i.e. we sample $$m = 0.2 \cdot d^2$$ measurements (recall that we are working on compressed sensing QST setting). We compare the effect of different momentum parameters in the figure below, where the accuracy of the estimated density matrix $$\widehat{\rho}$$ is measured with the true density matrix $$\rho^\star$$ in terms of the squared Frobenius norm, i.e. $$||\widehat{\rho} - \rho^\star||_F^2$$: 
 
-{{< figure src="/assets/img/ibm-data.png" title="MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8)." width="60%">}}
+
+![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
+
 
 Above figure summarizes the performance of $$\texttt{MiFGD}$$. In the legends, $$\mu^\star$$ is the momentum parameter proposed by our theory; however, it should be noted that $$\texttt{MiFGD}$$ converges with larger momentum values than $$\mu^\star$$, in particular featuring a steep dive to convergence for the largest value of $$\mu$$ we tested. Moreover, the above figure also highlights the universality of our approach: its performance is oblivious to the quantum state reconstructed, as long as it satisfies purity or it is close to a pure state. Our method does not require any additional structure assumptions in the quantum state. 
 
