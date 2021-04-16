@@ -139,7 +139,10 @@ Further, we move to larger problems ($$n=10$$ qubits: reporting on reconstructin
 
 Finally, in the right panel of the figure above, we fix the number of processes to $$p=48$$, in order to minimize compute time and increase the percentage of used measurements to $$20$$% of the complete measurements available for $$\texttt{Hadamard}(10)$$. We vary the momentum parameter from $$\mu=0$$ (no acceleration) to $$\mu=\frac{1}{4}$$, and confirm that we indeed get faster convergence times in the latter case while the fidelity value remains the same (i.e. coinciding upper plateau value in the plots). We can also compare with the previous fidelity versus time plot, where the same $$\mu$$ but half the measurements are consumed: more measurements translate to faster convergence times (plateau is reached roughly $$25$$% faster; compare the green line with the yellow line in the previous plot).
 
-
+## Conclusion
+We have introduced the $$\texttt{MiFGD}$$ algorithm for the factorized form of the low-rank QST problems. We proved that, under certain assumptions on the problem parameters, $$\texttt{MiFGD}$$ converges linearly to a neighborhood of the optimal solution, whose size depends on the momentum parameter $$\mu$$, while using acceleration motions in a non-convex setting. We demonstrate empirically, using both simulated and real data, that $$\texttt{MiFGD}$$ outperforms non-accelerated methods on both the original problem domain and the factorized space, contributing to recent efforts on testing QST algorithms in real quantum data.
+These results expand on existing work in the literature illustrating the promise of factorized methods for certain low-rank matrix problems. 
+Finally, we provide a publicly available implementation of our approach, compatible to the open-source software $$\texttt{Qiskit}$$, where we further exploit parallel computations in $$\texttt{MiFGD}$$ by extending its implementation to enable efficient, parallel execution over shared and distributed memory systems.
 
 
 
