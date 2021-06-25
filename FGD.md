@@ -60,102 +60,142 @@ The constraint $\text{Tr}(\rho) = 1$ is relaxed in~\eqref{eq:CVX2} to allow more
 We note that if $\mathcal{M}$ corresponds to a positive-operator valued measure (POVM), or includes the identity operator, then the explicit trace constraint is redundant.
 
 ## Projected Factored Gradient Descent
-Momentum is one of the de facto techniques to achieve acceleration in gradient descent type of algorithms. Acceleration methods exist in various forms, including Polyak's momentum, Nesterov's acceleration, classical momentum, etc. They end up behaving pretty similarly, and we will not get into the detail of different acceleration methods in this post. For interested readers, I recommend this [blog post](https://jlmelville.github.io/mize/nesterov.html) by James Melville.
+At its basis, the Projected Factored Gradient Descent (\texttt{ProjFGD}) algorithm transforms convex programs, such as in \eqref{eq:CVX1}-\eqref{eq:CVX2}, by enforcing the factorization of a $d\times d$ PSD matrix $\rho$ such that $\rho = A A^\dagger$, where $d=2^n$. 
+This factorization, popularized by Burer and Monteiro \cite{burer2003nonlinear} for solving semi-definite convex programming instances, naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. 
+For concreteness, we focus here on the  convex program \eqref{eq:CVX2}.
+In order to encode the trace constraint, \texttt{ProjFGD} enforces additional constraints on $A$. 
+In particular, the requirement that $\tr(\rho) \leq 1$ is equivalently translated to the \emph{convex} constraint $\|A\|_F^2 \leq 1$, where $\|\cdot\|_F$ is the Frobenius norm. 
+The above recast the program~\eqref{eq:CVX2} as a non-convex program: 
+\begin{equation}
+	\begin{aligned}
+		& \underset{A \in {\mathbb C}^{d \times r}}{\text{minimize}}
+		& & f(AA^\dagger) :=~ \tfrac{1}{2} \cdot \|y - \mathcal{M}(AA^\dagger)\|_2^2 \\
+		& \text{subject to}
+		& & \|A\|_F^2 \leq 1.
+	\end{aligned} \label{eq:nonCVX}
+\end{equation}
+Given $\text{rank}(\rhoo) =  r$, programs \eqref{eq:CVX2} and \eqref{eq:nonCVX} are equivalent in the sense that the optimal value of \eqref{eq:CVX2} is identical to that of \eqref{eq:nonCVX}, by the relation $\rho=AA^\dagger$; however, program \eqref{eq:nonCVX} might have additional local solutions.
+Further, while the constraint set is convex, the objective is no longer convex due to the bilinear transformation of the parameter space $\rho = AA^\dagger$.
+Such criteria have been studied recently in machine learning and signal processing applications \citep{sun2015guaranteed, chen2015fast, tu2015low, bhojanapalli2016dropping, park2016non, ge2016matrix, park2016provable, park2016finding}.
+Here, the added twist is the inclusion of further matrix norm constraints, that makes it proper for tasks such as QST; as we show in  the Supplementary information Section~A, such addition complicates the algorithmic analysis.
 
-A common feature accross acceleration methods is that, with proper hyper-parameter tuning, they can provide accelerated convergence rate with virtually no additional computation. This is exactly the motivation of the $$\texttt{MiFGD}$$ algorithm we propose for solving the non-convex objective in Eq. \eqref{eq:factored-obj}, and the algorithm proceeds as follows:
-\begin{align}
-\label{eq:mifgd} \tag{5}
-U_{i+1} &= Z_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(Z_i Z_i^\dagger) - y\right) \cdot Z_i, \quad 
-Z_{i+1} = U_{i+1} + \mu \left(U_{i+1} - U_i\right). 
+\emph{The \texttt{ProjFGD} algorithm and its guarantees:} 
+At heart, \texttt{ProjFGD} is a projected gradient descent algorithm over  the variable $A$; \emph{i.e.},
+\begin{equation}
+A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \gradf(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
+\end{equation} 
+where $\Pi_\mathcal{C}(B)$ denotes the projection of a matrix $B \in \mathbb{C}^{d \times r}$ onto the set $\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~\|A\|_F^2 \leq 1\right\}$.
+$\nabla f(\cdot): \mathbb{R}^{d \times d} \rightarrow \mathbb{R}^{d \times d}$ denotes the gradient of the function $f$.
+Specific details of the \texttt{ProjFGD} algorithm, along with a pseudocode implementation, are provided in the Method Section and in the Supplementary information Sections A and B. 
+Here, we focus on the theoretical guarantees of the \texttt{ProjFGD}.  
+In summary, our theory dictates a specific \emph{constant} step size selection, $\eta$, that guarantees convergence to the global minimum, assuming a satisfactory initial point $\rho_0$ is provided. 
+
+An important issue in optimizing \eqref{eq:nonCVX} over the factored space is the existence of non-unique possible factorizations for a given $\X$. 
+To see this, if $\X = AA^\dagger$, then for any unitary matrix $R \in \mathbb{C}^{r \times r}$ such that $RR^\dagger  = I$, we have $\X = \widehat{A} \widehat{A}^\dagger$, where $\widehat{A} = AR$.
+Since we are interested in obtaining a low-rank solution in the original space, we need a notion of distance to $\Xo$ over the factors. 
+We use the following unitary-invariant distance metric:
+\begin{definition}{\label{def:metric}}
+Let matrices $\A, \Ao \in \mathbb{C}^{d \times r}$. Define:
+\begin{align*}
+\dist\left(A, \Ao\right) :=\min_{R: R \in \mathcal{U}} \norm{A - \Ao R}_F, 
+\end{align*} where $\mathcal{U}$ is the set of $r \times r$ unitary matrices.
+\end{definition}
+
+Let us first describe the local convergence rate guarantees of \texttt{ProjFGD}.
+\begin{theorem}[Local convergence rate for QST]\label{thm:main2}
+Let $\rhoo$ be a rank-$r$ quantum state density matrix of an $n$-qubit system with a non-unique factorization $\rho_\star = \Ao \Ao^{\dagger}$, for $\Ao \in \mathbb{C}^{2^n \times r}$. Let $y\in{\mathbb R}^m$ be the measurement vector of $m={\cal O}(r n^6 2^n)$ random $n$-qubit Pauli observables, and $\mathcal{M}$ be the corresponding sensing map, such that $y_i = \left(\mathcal{M}(\rhoo)\right)_i + e_i, ~\forall i = 1, \dots, m$. Let the step $\eta$ in \texttt{ProjFGD} satisfy:
+\begin{align}\label{eq:step_size}
+\eta \leq \tfrac{1}{128\left(\widehat{L} \sigma_1(\rho_0) + \sigma_1(\gradf(\rho_0))\right)},
 \end{align}
+where $\sigma_1(\rho)$ denotes the leading singular value of $\rho$.
+Here, $\widehat{L} \in (1,2)$ and $\rho_0 = \A_0 \A_0^\dagger$ is the initial point such that:
+\begin{align*}
+\dist(\U_0, \Uo) \leq \gamma' \sigma_{r}(\Uo),
+\end{align*}
+for $\gamma' := c \cdot \tfrac{(1-\delta_{4r})}{(1+\delta_{4r})} \cdot \tfrac{\sigma_r(\Xo)}{\sigma_1(\Xo)}, ~c \leq \tfrac{1}{200}$, where $\delta_{4r}$ is the RIP constant. 
+Let $\U_t$ be the estimate of \texttt{ProjFGD} at the $t$-th iteration.; then, the new estimate $\U_{t+1}$ satisfies
+\begin{equation}
+\dist(\U_{t+1}, \Uo)^2 \leq \alpha \cdot \dist(\U_t, \Uo)^2, \label{conv:eq_01}
+\end{equation}
+where $\alpha := 1 - \frac{(1 - \delta_{4r}) \cdot \sigma_r(\Xo)}{550((1+\delta_{4r}) \sigma_1(\Xo) + \|e\|_2)} < 1$. 
+Further, $\U_{t+1}$ satisfies $ \dist(\U_{t+1}, \Uo) \leq \gamma' \sigma_{r}(\Uo)$, $\forall t$.
+\end{theorem}
 
-Here, $$Z_i \in \mathbb{C}^{d\times r}$$ is a rectangular matrix (with the same dimension as $$U_i$$) which accumulates the "momentum" of the iterates $$U_i$$. $$\mu$$ is the momentum parameter that balances the weight between the previous estimate $$U_i$$ and the current estimate $$U_{i+1}.$$
+The proof of Theorem~\ref{thm:main2} is provided in the Supplementary information Section~A. 
+The definitions of $L$ and $\widehat{L}$ can be found in the Methods Section; for our discussion, they can be assumed constants.
+The above theorem provides a \emph{local} convergence guarantee: 
+given an initialization point $\rho_0 = \A_0 \A_0^\dagger$ close enough to the optimal solution --in particular, where $\dist(\U_0, \Uo) \leq \gamma' \sigma_{r}(\Uo)$ is satisfied-- our algorithm converges locally with linear rate.
+In order to obtain $\dist(A_T, \Uo)^2 \leq \varepsilon$, \texttt{ProjFGD} requires $T = \mathcal{O}\left( \log \tfrac{\gamma' \cdot \sigma_r(\Uo)}{\varepsilon} \right)$ number of iterations.
+We conjecture that this further translates into linear convergence in the infidelity metric, $1-\tr(\sqrt{\sqrt{\rho_T}\rhoo\sqrt{\rho_T}})^2$.
 
-While the $$\texttt{MiFGD}$$ algorithm in Eq. \eqref{eq:mifgd} looks quite similar to $$\texttt{FGD}$$ in Eq. \eqref{eq:fgd}, it complicates the convergence theory significantly. This is because the two-step momentum procedure has to be considered, on top of the fact that the objective function in Eq. \eqref{eq:factored-obj} is non-convex. We will not get into the details of the convergence thoery here; interested readers are referred to our paper.[^kim2021fast] We finish this section with an informal theorem that illustrates the convergence behavior of $$\texttt{MiFGD}$$:
-
-**Theorem 1** ($$\texttt{MiFGD}$$ convergence rate (informal)). Assume that $$\mathcal{A}(\cdot)$$ satisfies the RIP for some constant $$0 < \delta_{2r} <1$$. Let $$y = \mathcal{A}(\rho^\star)$$ denote the set of measurements, by measuring the quantum density matrix $$\rho^\star$$. Given a good initialization point $$U_0$$, and setting step size $$\eta$$ and momentum $$\mu$$ appropriately, $$\texttt{MiFGD}$$ converges with a linear rate to a region—with radius that depends on $$O(\mu)$$—around the global solution $$\rho^\star$$. 
 
 ## Results
-In this section, we review some of the experimental results. First, we obtain real quantum data from IBM's Quantum Processing Unit (QPU) by realizing two types of quantum states: $$\texttt{GHZminus}(n)$$ and $$\texttt{Hadamard}(n)$$, for $$n = 6, 8$$, where $$n$$ is the number of qubits. In quantum computing, obtaining measurements itself is not a trivial process, which we will not get into the detail in this post. Yet, we highlight that, in the following plots, we only use $$20$$% of the measurements that are information-theoretically compelete, i.e. we sample $$m = 0.2 \cdot d^2$$ measurements (recall that we are working on compressed sensing QST setting). We compare the effect of different momentum parameters in the figure below, where the accuracy of the estimated density matrix $$\widehat{\rho}$$ is measured with the true density matrix $$\rho^\star$$ in terms of the squared Frobenius norm, i.e. $$||\widehat{\rho} - \rho^\star||_F^2$$: 
+Our experiments follow the discussion above. 
+We find that our initialization, as well as random initialization, works well in practice, and this behavior has been observed repeatedly in all the experiments we conducted. Thus, the method returns the exact solution of the convex programming problem, while being orders of magnitude faster than state-of-the-art optimization programs.
 
+
+As a first set of experiments, we compare the efficiency of \texttt{ProjFGD} with \emph{second-order} cone convex programs.
+State of the art solvers within this class of solvers are the SeDuMi and SDPT3 methods; for their use, we rely on the off-the-shelf Matlab wrapper \texttt{CVX} \citep{cvx}.
+In our experiments, we observed that SDPT3 was faster and we select it for our comparison.
+The setting is as described in the Results Section, where additive noise has variance $\sigma$, \emph{i.e.}, $\sim \mathcal{CN}(0, \sigma \cdot I)$.
+
+Figures \ref{fig:time_vs_measurements}-\ref{fig:time_vs_dimensions} show graphically how second-order convex vs. our first-order non-convex schemes scale. %, as a function of time.
+In Figure \ref{fig:time_vs_measurements}, we observe that, while in the \texttt{ProjFGD} more observations lead to faster convergence \citep{chandrasekaran2013computational}, the same does not hold for the second-order cone programs.
+In Figure \ref{fig:time_vs_dimensions}, it is obvious that the convex solvers do not scale easily beyond $n = 7$, whereas our method handles cases up to $n = 13$, within reasonable time.
+We note that, as $n$ increases, a significant amount of time in our algorithm is spent forming the Pauli measurement vectors $P_i$; \emph{i.e.}, 
+assuming that the application of $P_i$'s takes the same amount of time as in CVX solvers, \texttt{ProjFGD} requires much less additional computational power per iteration, compared to \texttt{CVX 1} and \texttt{CVX 2}. 
+
+
+
+We compare our method with more efficient first-order methods, both convex (\texttt{AccUniPDGrad}~\cite{yurtsever2015universal}) and non-convex (\texttt{SparseApproxSDP}~\cite{hazan2008sparse} and \texttt{RSVP}~\cite{becker2013randomized}); we briefly describe these methods in the Discussion Section.
+
+
+We consider two settings: $\rhoo$ is $(i)$ a pure state (\emph{i.e.}, $\text{rank}(\rhoo) = 1$) and, 
+$(ii)$ a nearly low-rank state.
+In the latter case, we construct $\rhoo = \rho_{\star, r} + \zeta$, where $\rho_{\star, r}$ is a rank-deficient PSD satisfying $\text{rank}(\rho_{\star, r}) = r$, and $\zeta \in \mathbb{C}^{d \times d}$ is a full-rank PSD noise term with a fast decaying eigen-spectrum, significantly smaller than the leading eigenvalues of $\rho_{\star, r}$.
+In other words, we can well-approximate $\rhoo$ with $\rho_{\star, r}$. For all cases, the noise is such that $\|e\| = 10^{-3}$. The number of data points $m$ satisfy $m = C_{\rm sam} \cdot r d $, for various values of $C_{\rm sam} > 0$. 
+
+Table \ref{tbl:small_Comp} contains recovery error and execution time results for the case $n = 13$ ($d = 8192$); in this case, we solve a $d^2 = 67,108,864$ dimensional problem. 
+For this case, \texttt{RSVP} and \texttt{SparseApproxSDP} algorithms were excluded from the comparison, due to excessive execution time.
+Supplementary information Section~C provides extensive results, where similar performance is observed for other values of $d=2^n$ and $C_{\rm sam}$.
+
+
+Table \ref{tbl:small_Comp2} considers the more general case where $\rhoo$ is nearly low-rank: \emph{i.e.}, it can be well-approximated by a density matrix $\rho_{\star, r}$ where $r=20$ (low-rank density matrix).
+In this case, $n = 12$ ($d = 4096$), $m = 245,760$ for $C_{\rm sam} = 3$. 
+As the rank in the model, $r$, increases, algorithms that utilize an SVD routine spend more CPU time on singular value/vector calculations. 
+Certainly, the same applies for matrix-matrix multiplications; however, in the latter case, the complexity scale is milder than that of the SVD calculations.  
+
+Overall, \texttt{ProjFGD} shows a substantial improvement in performance, as compared to the state-of-the-art algorithms; we would like to emphasize that projected gradient descent schemes, such as in Becker \emph{et al.}\cite{becker2013randomized}, are also efficient in small- to medium-sized problems, due to their
+fast convergence rate. 
+Further, convex approaches might show better sampling complexity performance (\emph{i.e.}, as $C_{\rm sam}$ decreases).
+Nevertheless, one can perform accurate maximum likelihood estimation for larger systems in the same amount of time using our methods for such small- to medium-sized problems.
 
 ![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
 
 *MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
 
 
-Above figure summarizes the performance of $$\texttt{MiFGD}$$. In the legends, $$\mu^\star$$ is the momentum parameter proposed by our theory; however, it should be noted that $$\texttt{MiFGD}$$ converges with larger momentum values than $$\mu^\star$$, in particular featuring a steep dive to convergence for the largest value of $$\mu$$ we tested. Moreover, the above figure also highlights the universality of our approach: its performance is oblivious to the quantum state reconstructed, as long as it satisfies purity or it is close to a pure state. Our method does not require any additional structure assumptions in the quantum state. 
 
-It should be noted that quantum data are inherently noisy. To highlight the level of noise existing in real quantum data, in the figure below, we also plot the performance of $$\texttt{MiFGD}$$ in the same setting using simulated quantum data from IBM's [QASM](https://github.com/Qiskit/openqasm) simulator:  
-
-![MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/simulator-data.png)
-
-*MiFGD performance on synthetic data using IBM's QASM simulator. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
-
-We see a similar trend with the result using real quantum data from IBM's QPU. However, we see that the overall accuracy of the reconstucted and the target states, $$\|\hat{\rho} - \rho^\star\|_F^2$$, is generally lower for the real quantum data--they do not reach the accuracy level of $$10^{-1}$$, which is acchieved for all cases using QASM simulator. This difference is summarized in the figure below:
-
-![Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM.](/assets/img/qpu-vs-qasm.png)
-
-*Final fidelity of MiFGD comparison using real quantum data from IBM's QPU and simulated quantum data using QASM.*
 
 #### Performance comparison with QST methods in $\texttt{Qiskit}$
-Now, we compare the performance of $$\texttt{MiFGD}$$ with [QST methods](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html) from [$$\texttt{Qiskit}$$](https://qiskit.org/), again using IBM's QASM simulator. $$\texttt{Qiskit}$$ provides two QST methods: $$i)$$ the $$\texttt{CVXPY}$$ method which relies on convex optimiztion, and $$ii)$$ the $$\texttt{lstsq}$$ which ruses least-squares fitting. Both methods solve the following full tomography problem (not compressed sensing QST problem):
 
-\begin{align}
- \min_{\rho \in \mathbb{C}^{d \times d}}
- \quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \quad 
- \text{subject to}
- \quad & \rho \succeq 0, ~\texttt{Tr}(\rho) = 1.
-\end{align}
-
-We note that $$\texttt{MiFGD}$$ is not restricted to "tall" $$U$$ scenarios to encode PSD and rank constraints: even without rank constraints, one could still exploit the matrix decomposition $$\rho = UU^\dagger$$ to avoid the PSD projection, $$\rho \succeq 0$$, where $$U \in \mathbb{C}^{d \times d}$$.
-
-We consider the following cases: $$\texttt{GHZ}(n), \texttt{Hadamard}(n),$$ and $$\texttt{Random}(n)$$ for $$n = 3, \dots, 8$$. 
-The results are shown in the figure below:
-
-![Performance comparison with Qiskit methods. All experiments are performed on a 13” Macbook Pro with 2.3 GHz Quad-Core Intel Core i7 CPU and 32 GB RAM.](/assets/img/qiskit-comparison-plot.png)
-
-*Performance comparison with Qiskit methods. All experiments are performed on a 13” Macbook Pro with 2.3 GHz Quad-Core Intel Core i7 CPU and 32 GB RAM.*
-
-Some notable remarks: $$i)$$ For small-scale scenarios ($$n=3, 4$$), $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ attain almost perfect fidelity, while being comparable or faster than $$\texttt{MiFGD}$$. $$ii)$$The difference in performance becomes apparent from $$n = 6$$ and on: while $$\texttt{MiFGD}$$ attains $$98$$% fidelity in less than $$5$$ seconds, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ require up to hundreds of seconds to find a good solution. Finally, while $$\texttt{MiFGD}$$ gets to high-fidelity solutions in seconds for $$n = 7, 8$$, $$\texttt{CVXPY}$$ and $$\texttt{lstsq}$$ methods require more than 12 hours execution time; however, their execution never ended, since the memory usage exceeded the system's available memory.
 
 
 #### Performance comparison with neural-network QST using $$\texttt{Qucumber}$$
-Next, we compare the performance of $$\texttt{MiFGD}$$ compare with neural-network based QST methods, proivded by [$$\texttt{Qucumber}$$](https://qucumber.readthedocs.io/en/stable/). We consider the same quantum states as with $$\texttt{Qiskit}$$ experiments, but here we consider the case where only $$50$$% of the measurements are available. 
 
-We report the fidelity of the reconstruction as a function of elapsed training time for $$n = 3, 4$$ in the figure below for all methods provided by $$\texttt{Qucumber}$$: $$\texttt{PRWF}, \texttt{CWF}$$, and $$\texttt{DM}$$. Note that Time (secs) on $$x$$-axis is plotted with log-scale.
-
-![Performance comparison with Qucumber methods. All experiments are performed on a NVidia GeForce GTX 1080 TI with 11GB RAM.](/assets/img/nn-comparison-plot.png)
-
-*Performance comparison with Qucumber methods. All experiments are performed on a NVidia GeForce GTX 1080 TI with 11GB RAM.*
-
-We observe that for all cases, $$\texttt{Qucumber}$$ methods are orders of magnitude slower than $$\texttt{MiFGD}$$.
-For the $$\texttt{Hadamard}(n)$$ and $$\texttt{Random}(n)$$, reaching reasonable fidelities is significantly slower for both $$\texttt{CWF}$$ and $$\texttt{DM},$$ while $$\texttt{PRWF}$$ hardly improves its performance throughout the training. For the $$\texttt{GHZ}$$ case, $$\texttt{CWF}$$ and $$\texttt{DM}$$ also shows *non-monotonic* behaviors: even after a few thousands of seconds, fidelities have not "stabilized", while $$\texttt{PRWF}$$ stabilizes in very low fidelities. In comparison, $$\texttt{MiFGD}$$ is several orders of magnitude faster than both $$\texttt{CWF}$$ and $$\texttt{DM}$$ and fidelity smoothly increases to comparable or higher values. What is notable is the scalability of $$\texttt{MiFGD}$$ compared to neural network approaches for higher values of $$n$$. 
-
-To see this more clearly, in the table below, we report the final fidelities (within the $$3$$ hour time window), and reported times. We see that for many cases, $$\texttt{CWF}$$ and $$\texttt{DM}$$ methods did not complete a single iterations within $$3$$ hours. 
-
-![Comparison with Qucumber methods.](/assets/img/nn-comparison.png)
-
-*Comparison with Qucumber methods.*
 
 #### The effect of parallelization in $$\texttt{MiFGD}$$
-We also study the effect of paralleization in running $$\texttt{MiFGD}$$. We parallelize the iteration step across a number of processes, that can be either distributed and network connected, or sharing memory in a multicore environment. Our approach is based on [Message Passing Interface (MPI)](https://en.wikipedia.org/wiki/Message_Passing_Interface) specification. We assign to each process a subset of the measurement labels consumed by the parallel computation. At each step, a process first computes the local gradient using a subset of measurements. These local gradients are then communicated so that they can be added up to form the full gradient, and the full gradient is shared with each worker.
-
-In our first round of experiments, we investigate the scalability of the parallelization approach. We vary the number $$p$$ of parallel processes $$(p=1, 2, 4, 8, 16, 32, 48, 64, 80, 96)$$, collect timings for reconstructing $$\texttt{GHZ}(4)$$, $$\texttt{Random}(6)$$ and $$\texttt{GHZminus}(8)$$ states, and report speedups $$T_p/T_1$$ we gain from $$\texttt{MiFGD}$$ in the figure bloew (left panel). We observe that the benefits of parallelization are pronounced for bigger problems (here: $$n=8$$ qubits) and maximum scalability results when we use all physical cores ($48$$ in our platform).
-
-![Effect of parallelization of MiFGD. Left: scalability of parallelization of MiFGD for different number of processors. Middle: fidelity versus time consued for different number of processors on Hadamard(10) state. Right: The effect of momentum on Hadamard(10) state with 48 processors](/assets/img/parallel.png)
-
-*Effect of parallelization of MiFGD. Left: scalability of parallelization of MiFGD for different number of processors. Middle: fidelity versus time consued for different number of processors on Hadamard(10) state. Right: The effect of momentum on Hadamard(10) state with 48 processors.*
-
-Further, we move to larger problems ($$n=10$$ qubits: reporting on reconstructing $$\texttt{Hadamard}(10)$$ state) and focus on the effect parallelization to achieving a given level of fidelity in reconstruction. In the middle panel of the figure above, we illustrate the fidelity as a function of the time spent in the iteration loop of $$\texttt{MiFGD}$$ for ($$p=8, 16, 32, 48, 64$$): we observe the smooth path to convergence in all $$p$$ counts which again minimizes compute time for $$p=48$$. Note that in this case we use $$10$$% of the complete measurements, and the momenutum parameter $$\mu=\frac{1}{4}$$.
-
-Finally, in the right panel of the figure above, we fix the number of processes to $$p=48$$, in order to minimize compute time and increase the percentage of used measurements to $$20$$% of the complete measurements available for $$\texttt{Hadamard}(10)$$. We vary the momentum parameter from $$\mu=0$$ (no acceleration) to $$\mu=\frac{1}{4}$$, and confirm that we indeed get faster convergence times in the latter case while the fidelity value remains the same (i.e. coinciding upper plateau value in the plots). We can also compare with the previous fidelity versus time plot, where the same $$\mu$$ but half the measurements are consumed: more measurements translate to faster convergence times (plateau is reached roughly $$25$$% faster; compare the green line with the yellow line in the previous plot).
 
 ## Conclusion
-We have introduced the $$\texttt{MiFGD}$$ algorithm for the factorized form of the low-rank QST problems. We proved that, under certain assumptions on the problem parameters, $$\texttt{MiFGD}$$ converges linearly to a neighborhood of the optimal solution, whose size depends on the momentum parameter $$\mu$$, while using acceleration motions in a non-convex setting. We demonstrate empirically, using both simulated and real data, that $$\texttt{MiFGD}$$ outperforms non-accelerated methods on both the original problem domain and the factorized space, contributing to recent efforts on testing QST algorithms in real quantum data.
-These results expand on existing work in the literature illustrating the promise of factorized methods for certain low-rank matrix problems. 
-Finally, we provide a publicly available implementation of our approach, compatible to the open-source software $$\texttt{Qiskit}$$, where we further exploit parallel computations in $$\texttt{MiFGD}$$ by extending its implementation to enable efficient, parallel execution over shared and distributed memory systems.
-
+With nowadays steadily growing quantum processors, it is required to develop new quantum
+tomography tools that are tailored for high-dimensional systems. In this work, we describe such
+a computational tool, based on recent ideas from non-convex optimization. The algorithm excels
+in the compressed-sensing-like setting, where only a few data points are measured from a lowrank or highly-pure quantum state of a high-dimensional system. We show that the algorithm can
+practically be used in quantum tomography problems that are beyond the reach of convex solvers,
+and, moreover, is faster than other state-of-the-art non-convex approaches. Crucially, we prove that,
+despite being a non-convex program, under mild conditions, the algorithm is guaranteed to converge
+to the global minimum of the problem; thus, it constitutes a provable quantum state tomography
+protocol.
 
 
 
