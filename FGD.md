@@ -2,43 +2,25 @@
 layout: default
 ---
 
-*(Blog post by Junhyung Lyle Kim - see also [here](https://jlylekim.github.io/post/acc-qst/))*
-
-
-This blog post is about my recent work on quantum state tomography using (accelerated) non-convex programming.[^kim2021fast] Our manuscript is on [arXiv](https://arxiv.org/abs/2104.07006). This is a joint work with my advisor [Prof. Tasos Kyrillidis](https://akyrillidis.github.io/about/) at Rice University, [Dr. Amir Kalev](https://scholar.google.com/citations?user=te_1dnAAAAAJ&hl=en) at USC, and [Dr. Georgios Kollias](https://researcher.watson.ibm.com/researcher/view.php?person=us-gkollias) and [Dr. Ken Wei](https://scholar.google.com/citations?user=9uuZX3IAAAAJ&hl=en) at IBM Quantum.
+This blog post is about our previous work on quantum state tomography using non-convex programming.[^kyrillidis2018provable] This manuscript is on [arXiv](https://arxiv.org/pdf/1711.02524.pdf), but also published at [npj Quantum Information](https://www.nature.com/articles/s41534-018-0080-4) This is a joint work of [Prof. Tasos Kyrillidis](https://akyrillidis.github.io/about/) at Rice University, [Dr. Amir Kalev](https://scholar.google.com/citations?user=te_1dnAAAAAJ&hl=en) at USC, [Dr. Dohyung Park](), [Dr. Srinadh Bhojanapalli](https://bsrinadh.github.io/), [Dr. Constantine Caramanis](https://caramanis.github.io/) and [Dr. Sujay Sanghavi](http://users.ece.utexas.edu/~sanghavi/).
 
 ## Introduction
 
-Quantum state tomography (QST) is one of the main procedures to identify the nature of imperfections in quantum processing unit (QPU) implementation. High-level procedure is to measure the quantum system, estimate the density matrix using the measured data, and analyze the "fit" between the estimated density matrix and the true density matrix.
+Like any other processor, the behavior of a quantum information processor must be characterized, verified, and certified. Quantum state tomography (QST) is one of
+the main tools for that purpose [1]. Yet, it is generally an inefficient procedure, since the number of parameters that specify quantum states, grows exponentially with the number of sub-systems. This inefficiency has two practical manifestations: (i) without any prior information, a vast number of data points needs to be collected [1]; (ii) once the data is gathered, a numerical procedure should be executed on an exponentially-high dimensional space, in order to infer the quantum state that is most consistent with the observations. Thus, to perform QST on nowadays steadily growing quantum processors [2, 3], we must introduce novel, more efficient, techniques for its completion. QST is generally not scalable due to two bottlenecks: $$i)$$ large data has to be collected to perform tomography; and $$ii)$$ the space of density matrices grows exponentially, from which the one that is consistent with the data has to be found.
 
-QST is generally not scalable due to two bottlenecks: $$i)$$ large data has to be collected to perform tomography; and $$ii)$$ the space of density matrices grows exponentially, from which the one that is consistent with the data has to be found.
-
-To address the first bottleneck, prior information is often assumed and leveraged to reduce the number of data required. For example, in compressed sensing QST, [^gross2010quantum] [^kalev2015quantum]  it assumes that the density matrix is of low-rank. Similarly, in neural network QST, the wavefunctions are assumed to be real and positive. [^torlai2018neural] [^torlai2019machine] [^beach2019qucumber]
-
-To give a concrete example, in the figure below, real (top) and imaginary (bottom) parts of four different states are shown: $$i)$$ $$\texttt{GHZ}$$ state, $$ii)$$ $$\texttt{GHZminus}$$ state, $$iii)$$ $$\texttt{Hadamard}$$ state, and $$iv)$$ $$\texttt{Random}$$ state; for the mathematical description of the above states, refer to our paper. [^kim2021fast] As can be seen, for $$\texttt{GHZ}$$ and $$\texttt{GHZminus}$$ states, only four corners of the real parts have non-zero entries. Therefore, the density matrices of these states are both of low-rank and sparse. If these kinds of "structures" are smartly leveraged, one can sometimes confine the search space of density matrices greatly, leading to less number of measurements required for successful tomography results. 
-
-
-![From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system.](/assets/img/state-plots.png)
-
-*From left to right: GHZ, GHZminus, Hadamard, and Random states. All states are in 4-qubit system.*
-
-With regards to the second bottleneck, variants of gradient descent convex solvers were proposed under synthetic scenarios. [^goncalves2016projected] [^bolduc2017projected] [^shang2017superfast] [^hu2019reconstructing] However, due to the exponentially increasing space of density matrices, these methods often can be only applied to relatively small system, on top of relying on special-purpose hardwares and proper distributed system designs.[^hou2016full]  
-
-On the contrary, non-convex optimization methods can perform much faster. It was recently shown that one can formulate compressed sensing QST as a non-convex problem,[^kyrillidis2018provable] which can be solved with rigorous convergence guarantees, allowing density matrix estimation in a large system. A relevant result can be seen in the **Results** section below, where we compare our proposed (accelerated) non-convex method with [convex methods from $$\texttt{Qiskit}$$](https://qiskit.org/documentation/stubs/qiskit.ignis.verification.TomographyFitter.html).  
-
-In this work, we consider the setup where $$n$$-qubit state is close to a pure state, thus its density matrix is of low-rank. We introduce an accelerated non-convex algorithm with provable gaurantees, which we call $$\texttt{MiFGD}$$, short for "$$\texttt{M}$$omentum $$\texttt{i}$$nspired $$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent."
+To improve the efficiency of QST, we need to complement it with numerical algorithms that can efficiently handle large search spaces using limited amount of data, while having rigorous performance guarantees. This is the purpose of this work. Inspired by the recent advances on finding the global minimum in non-convex problems [24–38], we propose the application of alternating gradient descent in QST, that operates directly on the assumed low-rank structure of the density matrix. The algorithm –named Projected Factored Gradient Decent (ProjFGD) and described below in detail– is based on the recently analyzed non-convex method in [29] for PSD matrix factorization problems. The added twist is the inclusion of further constraints in the optimization program, that makes it applicable for tasks such as QST.
 
 ## Problem setup
-We consider the reconstruction of a low-rank density matrix $$\rho^\star \in \mathbb{C}^{d \times d}$$ on a $$n$$-qubit Hilbert space, where $$d=2^n$$, through the following $$\ell_2$$-norm reconstruction objective:
+We begin by describing  the problem of QST. 
+We are focusing here on  QST of a low-rank $n$-qubit state, $\rho_{\star}$, from measuring expectation values of $n$-qubit Pauli observables $\{P_i\}_{i=1}^m$. We denote by $y \in \mathbb{R}^m$  the measurement vector with elements $y_i = \tfrac{2^n}{\sqrt{m}}\text{Tr}(P_i \cdot \rho_\star)+e_i,~i = 1, \dots, m$, for some measurement error $e_i$. 
+The normalization $\tfrac{2^n}{\sqrt{m}}$ is chosen to follow the results of Liu\cite{liu2011universal}.
+For brevity, we denote $\linmap : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$ as the linear ``sensing" map, such that $(\linmap(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$, for $i = 1, \dots, m$. 
 
-\begin{align}
-\label{eq:objective} \tag{1}
-\min_{\rho \in \mathbb{C}^{d \times d}}
-\quad & f(\rho) := \tfrac{1}{2} ||\mathcal{A}(\rho) - y||_2^2 \quad
-\text{subject to} \quad \rho \succeq 0, ~\texttt{rank}(\rho) \leq r.
-\end{align}
+An $n$-qubit Pauli observable is given by $P=\otimes_{j=1}^n s_j$ where $s_j\in\{\mathbb{1},\sigma_x,\sigma_y,\sigma_z\}$.
+There are $4^n$ such observables in total. 
+In general, one needs to have the expectation values of all $4^n$ Pauli observables to uniquely reconstruct $\rho_\star$. However, since according to our assumption $\rho_\star$ is a low-rank quantum state, we can apply the CS result~\citep{gross2010quantum, liu2011universal},  that guarantees a robust estimation, with high probability, from the measurement of the expectation values of just $m={\cal O}(r 2^n n^6)$ randomly chosen Pauli observables, where $r\ll 2^n$ is the rank of $\rho_\star$.
 
-Here, $$y \in \mathbb{R}^m$$ is the measured data through quantum computer or simulation, and $$\mathcal{A}(\cdot): \mathbb{C}^{d \times d} \rightarrow \mathbb{R}^m$$ is the linear sensing map. The sensing map relates the density matrix $$\rho$$ to the measurements through [Born rule](https://en.wikipedia.org/wiki/Born_rule): $$\left( \mathcal{A}(\rho) \right)_i = \text{Tr}(A_i \rho),$$ where $$A_i \in \mathbb{C}^{d \times d},~i=1, \dots, m$$ are the sensing matrices. From the objective function above, we see two constraints: $$i)$$ the density matrix $$\rho$$ is a positive semidefinite matrix (which is a convex constraint), and $$ii)$$ the rank of the density matrix is less than $$r$$ (which is a non-convex constraint). 
 
 As mentioned earlier, we focus on _compressed sensing quantum state tomography_ setting, where the number of measured data $$m$$ is much smaller than the problem dimension $$O(d^2)$$. Compressed sensing is a powerful optimization framework developed mainly by [Emmanuel Candès](https://statweb.stanford.edu/~candes/), [Justin Romberg](https://jrom.ece.gatech.edu/), [Terence Tao](https://www.math.ucla.edu/~tao/) and [David Donoho](https://web.stanford.edu/dept/statistics/cgi-bin/donoho/), and requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
 
@@ -49,22 +31,35 @@ As mentioned earlier, we focus on _compressed sensing quantum state tomography_ 
 
 Intuitively, the above RIP assumption states that the sensing matrices $$\mathcal{A}(\cdot)$$ only "marginally" changes the norm of the matrix $$X$$.
 
-Going back to the main optimization problem in Eq. \eqref{eq:objective}, instead of solving it as is, we propose to solve a factorized version of it, following recent work [^kyrillidis2018provable]:
-\begin{align}
-\label{eq:factored-obj} \tag{3}
-  \min_{U \in \mathbb{C}^{d \times r}} f(UU^\dagger) := \tfrac{1}{2} || \mathcal{A} (UU^\dagger) - y ||_2^2,
-\end{align}
-where $$U^\dagger$$ denotes the [adjoint](https://en.wikipedia.org/wiki/Conjugate_transpose) of $$U$$. The motivation is rather clear: in the original objective function in Eq. \eqref{eq:objective}, the density matrix $$\rho$$ is represented as a $$d \times d$$ Hermitian matrix, and due to the (non-convex) $$\texttt{rank}(\cdot)$$ constraint, some method to project onto the set of low-rank matrices is required. Instead, we work in the space of the factors $$U \in \mathbb{C}^{d \times r}$$, and by taking an outer-product, the $$\texttt{rank}(\cdot)$$ constraint and the PSD constraint $$\rho \succeq 0$$ are automatically satisfied, leading to the non-convex formulation in Eq. \eqref{eq:factored-obj}. But how do we solve such problem?
+An accurate estimation of $\rhoo$ is obtained  by solving, essentially, a convex optimization problem constrained to the set of quantum states~\citep{kalev2015quantum}, consistent with the measured data.  
+Among the various problem formulations for QST, 
+two convex program examples are the trace-minimization program that is typically studied in the context of CS QST:
+\begin{equation}
+	\begin{aligned}
+		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
+		& & \text{Tr}(\rho) \\
+		& \text{subject to}
+		& & \rho \succeq 0, \\
+		& & & \|y - \mathcal{M}(\rho)\|_2 \leq \epsilon,
+	\end{aligned} \label{eq:CVX1}
+\end{equation}
+and the least-squares program,
+\begin{equation}
+	\begin{aligned}
+		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
+		& & \tfrac{1}{2} \cdot \|y - \mathcal{M}(\rho)\|_2^2 \\
+		& \text{subject to}
+		& & \rho \succeq 0, \\
+		& & & \text{Tr}(\rho) \leq 1,
+	\end{aligned} \label{eq:CVX2}
+\end{equation}
+which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption.
+The constraint $\rho \succeq 0$ captures the positive semi-definite assumption, $\|\cdot\|_2$ is the vector Euclidean $\ell_2$-norm, and $\epsilon >0$ is a parameter related to the error level in the model.
+Key in both programs is the combination of the PSD constraint and the trace object: combined, they constitute the tightest convex relaxation to the low-rank, PSD structure of the unknown $\rho_\star$; see also Recht \emph{et al.}\citep{recht2010guaranteed}.  
+The constraint $\text{Tr}(\rho) = 1$ is relaxed in~\eqref{eq:CVX2} to allow more robustness to noise, following Kalev \emph{et al.}\citep{kalev2015quantum}. The solutions of these programs should be normalized to have unit trace to represent quantum states.
+We note that if $\mathcal{M}$ corresponds to a positive-operator valued measure (POVM), or includes the identity operator, then the explicit trace constraint is redundant.
 
-A common approach is to use gradient descent on $$U$$, which iterates as follows:
-\begin{align}
-\label{eq:fgd} \tag{4}
-U_{i+1} &= U_{i} - \eta \nabla f(U_i U_i^\dagger) \cdot U_i 
-= U_{i} - \eta \mathcal{A}^\dagger \left(\mathcal{A}(U_i U_i^\dagger) - y\right) \cdot U_i.
-\end{align}
-Here, $$\mathcal{A}^\dagger: \mathbb{R}^m \rightarrow \mathbb{C}^{d \times d}$$ is the adjoint of $$\mathcal{A}$$, defined as $$\mathcal{A}^\dagger = \sum_{i=1}^m x_i A_i.$$ $$\eta$$ is a hyperparameter called step size or learning rate. This method is called "$$\texttt{F}$$actored $$\texttt{G}$$radient $$\texttt{D}$$escent" ($$\texttt{FGD}$$), and was utilized to solve the non-convex objective function in Eq. \eqref{eq:factored-obj}, (surprisingly) with provable gaurantees.[^kyrillidis2018provable]
-
-## Momentum-inspired Factored Gradient Descent
+## Projected Factored Gradient Descent
 Momentum is one of the de facto techniques to achieve acceleration in gradient descent type of algorithms. Acceleration methods exist in various forms, including Polyak's momentum, Nesterov's acceleration, classical momentum, etc. They end up behaving pretty similarly, and we will not get into the detail of different acceleration methods in this post. For interested readers, I recommend this [blog post](https://jlmelville.github.io/mize/nesterov.html) by James Melville.
 
 A common feature accross acceleration methods is that, with proper hyper-parameter tuning, they can provide accelerated convergence rate with virtually no additional computation. This is exactly the motivation of the $$\texttt{MiFGD}$$ algorithm we propose for solving the non-convex objective in Eq. \eqref{eq:factored-obj}, and the algorithm proceeds as follows:
