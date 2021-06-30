@@ -9,15 +9,15 @@ This blog post is about our initial work on quantum state tomography using non-c
 Like any other processor, the behavior of a quantum information processor must be characterized, verified, and certified. Quantum state tomography (QST) is one of
 the main tools for that purpose[^altepeter2005photonic]. Yet, it is generally an inefficient procedure, since the number of parameters that specify quantum states, grows exponentially with the number of sub-systems. 
 
-This inefficiency has two practical manifestations: $(i)$ without any prior information, a vast number of data points needs to be collected[^altepeter2005photonic]; $(ii)$ once the data is gathered, a numerical procedure should be executed on an exponentially-high dimensional space, in order to infer the quantum state that is most consistent with the observations. Thus, to perform QST on nowadays steadily growing quantum processors, we must introduce novel, more efficient, techniques for its completion. 
+This inefficiency has two practical manifestations: $$(i)$$ without any prior information, a vast number of data points needs to be collected[^altepeter2005photonic]; $$(ii)$$ once the data is gathered, a numerical procedure should be executed on an exponentially-high dimensional space, in order to infer the quantum state that is most consistent with the observations. Thus, to perform QST on nowadays steadily growing quantum processors, we must introduce novel, more efficient, techniques for its completion. 
 
 To improve the efficiency of QST, we need to complement it with numerical algorithms that can efficiently handle large search spaces using limited amount of data, while having rigorous performance guarantees. This is the purpose of this work. Inspired by the recent advances on finding the global minimum in non-convex problems[^bhojanapalli2016dropping][^chen2015fast][^ge2016matrix][^park2016finding][^park2016non][^sun2015guaranteed], we propose the application of alternating gradient descent in QST, that operates directly on the assumed low-rank structure of the density matrix. The algorithm –named Projected Factored Gradient Decent (ProjFGD)– is based on the recently analyzed non-convex method[^bhojanapalli2016dropping] for PSD matrix factorization problems. The added twist is the inclusion of further constraints in the optimization program, that makes it applicable for tasks such as QST.
 
 ## Problem setup
-We begin by describing  the problem of QST. 
-We are focusing here on  QST of a low-rank $n$-qubit state, $\rho_{\star}$, from measuring expectation values of $n$-qubit Pauli observables $\{P_i\}_{i=1}^m$. We denote by $y \in \mathbb{R}^m$  the measurement vector with elements $y_i = \tfrac{2^n}{\sqrt{m}}\text{Tr}(P_i \cdot \rho_\star)+e_i,~i = 1, \dots, m$, for some measurement error $e_i$. 
-The normalization $\tfrac{2^n}{\sqrt{m}}$ is chosen to follow the results of Liu\cite{liu2011universal}.
-For brevity, we denote $\linmap : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$ as the linear ``sensing" map, such that $(\linmap(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$, for $i = 1, \dots, m$. 
+We begin by describing the problem of QST. 
+We are focusing here on QST of a low-rank $$n$$-qubit state, $$\rho_{\star}$$, from measuring expectation values of $$n$$-qubit Pauli observables $$\{P_i\}_{i=1}^m$$. We denote by $$y \in \mathbb{R}^m$$  the measurement vector with elements $$y_i = \tfrac{2^n}{\sqrt{m}}\text{Tr}(P_i \cdot \rho_\star)+e_i,~i = 1, \dots, m$$, for some measurement error $$e_i$$. 
+The normalization $$\tfrac{2^n}{\sqrt{m}}$$ is chosen to follow the results of Liu[^liu2011universal].
+For brevity, we denote $$\mathcal{A} : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$ as the linear "sensing" map, such that $$(\mathcal{A}(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$$, for $$i = 1, \dots, m$$. 
 
 An $n$-qubit Pauli observable is given by $P=\otimes_{j=1}^n s_j$ where $s_j\in\{\mathbb{1},\sigma_x,\sigma_y,\sigma_z\}$.
 There are $4^n$ such observables in total. 
@@ -246,5 +246,7 @@ protocol.
 [^park2016non]: Park, D., Kyrillidis, A., Carmanis, C. & Sanghavi, S. Non-square matrix sensing without spurious local minima via the Burer–Monteiro approach. In Artificial Intelligence and Statistics, 65–74 (2016).
 
 [^sun2015guaranteed]: Sun, R. & Luo, Z.-Q. Guaranteed matrix completion via nonconvex factorization. In IEEE Annual Symposium on Foundations of Computer Science, 270–289 (2015).
+
+[^liu2011universal]: Liu, Y.-K. Universal low-rank matrix recovery from Pauli measurements. In Advances in Neural Information Processing Systems, 1638–1646 (2011).
 
 [back](./)
