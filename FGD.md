@@ -61,10 +61,7 @@ and the least-squares program,
 which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption. The solutions of these programs should be normalized to have unit trace to represent quantum states.
 
 ## Projected Factored Gradient Descent
-At its basis, the Projected Factored Gradient Descent (\texttt{ProjFGD}) algorithm transforms convex programs, such as in \eqref{eq:CVX1}-\eqref{eq:CVX2}, by enforcing the factorization of a $d\times d$ PSD matrix $\rho$ such that $\rho = A A^\dagger$, where $d=2^n$. 
-This factorization, popularized by Burer and Monteiro \cite{burer2003nonlinear} for solving semi-definite convex programming instances, naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. 
-For concreteness, we focus here on the  convex program \eqref{eq:CVX2}.
-In order to encode the trace constraint, \texttt{ProjFGD} enforces additional constraints on $A$. 
+At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) algorithm transforms convex programs by enforcing the factorization of a $$d\times d$$ PSD matrix $$\rho$$ such that $$\rho = A A^\dagger$$, where $$d=2^n$$. This factorization naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. In order to encode the trace constraint, ProjFGD enforces additional constraints on $A$. 
 In particular, the requirement that $\tr(\rho) \leq 1$ is equivalently translated to the \emph{convex} constraint $\|A\|_F^2 \leq 1$, where $\|\cdot\|_F$ is the Frobenius norm. 
 The above recast the program~\eqref{eq:CVX2} as a non-convex program: 
 \begin{equation}
