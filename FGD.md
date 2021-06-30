@@ -34,7 +34,8 @@ The above condition should hold for all low-rank $$X$$ matrices.
 Intuitively, the above RIP assumption states that the sensing matrices $$\mathcal{M}(\cdot)$$ only "marginally" changes the norm of the matrix $$X$$.
 
 ## QST as an optimization problem
-An accurate estimation of $$\rho_\star$$ is obtained  by solving, essentially, a convex optimization problem constrained to the set of quantum states[^kalev2015quantum], consistent with the measured data.  Among the various problem formulations for QST,  two convex program examples are the trace-minimization program that is typically studied in the context of CS QST:
+An accurate estimation of $$\rho_\star$$ is obtained  by solving, essentially, a convex optimization problem constrained to the set of quantum states[^kalev2015quantum], consistent with the measured data.  Among the various problem formulations for QST, two convex program examples are the trace-minimization program that is typically studied in the context of CS QST:
+
 \begin{equation}
 	\begin{aligned}
 		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
@@ -44,7 +45,9 @@ An accurate estimation of $$\rho_\star$$ is obtained  by solving, essentially, a
 		& & & \|y - \mathcal{M}(\rho)\|_2 \leq \epsilon,
 	\end{aligned} \label{eq:CVX1}
 \end{equation}
+
 and the least-squares program,
+
 \begin{equation}
 	\begin{aligned}
 		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
@@ -54,6 +57,7 @@ and the least-squares program,
 		& & & \text{Tr}(\rho) \leq 1,
 	\end{aligned} \label{eq:CVX2}
 \end{equation}
+
 which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption.
 The constraint $\rho \succeq 0$ captures the positive semi-definite assumption, $\|\cdot\|_2$ is the vector Euclidean $\ell_2$-norm, and $\epsilon >0$ is a parameter related to the error level in the model.
 Key in both programs is the combination of the PSD constraint and the trace object: combined, they constitute the tightest convex relaxation to the low-rank, PSD structure of the unknown $\rho_\star$; see also Recht \emph{et al.}\citep{recht2010guaranteed}.  
