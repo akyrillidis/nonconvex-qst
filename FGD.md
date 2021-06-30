@@ -77,7 +77,7 @@ Here, the added twist is the inclusion of further matrix norm constraints, that 
 
 #### The $$\texttt{ProjFGD}$$ algorithm and its guarantees
 
-At heart, $$\texttt{ProjFGD}$$ is a projected gradient descent algorithm over  the variable $$A$$; \emph{i.e.},
+At heart, $$\texttt{ProjFGD}$$ is a projected gradient descent algorithm over  the variable $$A$$; i.e.,
 
 \begin{equation}
 A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \nabla f(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
@@ -104,47 +104,39 @@ State of the art solvers within this class of solvers are the SeDuMi and SDPT3 m
 The figures above show graphically how second-order convex vs. our first-order non-convex schemes scale. 
 We observe that, while in the $$\texttt{ProjFGD}$$ more observations lead to faster convergence, the same does not hold for the second-order cone programs.
 It is obvious that the convex solvers do not scale easily beyond $$n = 7$$, whereas our method handles cases up to $$n = 13$$, within reasonable time.
-We note that, as $$n$$ increases, a significant amount of time in our algorithm is spent forming the Pauli measurement vectors $$P_i$$; \emph{i.e.}, 
+We note that, as $$n$$ increases, a significant amount of time in our algorithm is spent forming the Pauli measurement vectors $$P_i$$; i.e., 
 assuming that the application of $$P_i$$'s takes the same amount of time as in CVX solvers, $$\texttt{ProjFGD}$$ requires much less additional computational power per iteration.
 
 
 #### Efficiency of $$\texttt{ProjFGD}$$ versus second-order cone programs
+We compare our method with more efficient first-order methods, both convex ($$\texttt{AccUniPDGrad}$$[^yurtsever2015universal]) and non-convex ($$\texttt{SparseApproxSDP}$$[^hazan2008sparse] and $$\texttt{RSVP}$$[^becker2013randomized]). 
 
-We compare our method with more efficient first-order methods, both convex (\texttt{AccUniPDGrad}~\cite{yurtsever2015universal}) and non-convex (\texttt{SparseApproxSDP}~\cite{hazan2008sparse} and \texttt{RSVP}~\cite{becker2013randomized}); we briefly describe these methods in the Discussion Section.
+We consider two settings: $$\rho_\star$$ is $$(i)$$ a pure state (i.e., $$\text{rank}(\rho_\star) = 1$$) and, 
+$$(ii)$$ a nearly low-rank state.
+In the latter case, we construct $$\rho_\star = \rho_{\star, r} + \zeta$$, where $$\rho_{\star, r}$$ is a rank-deficient PSD satisfying $$\text{rank}(\rho_{\star, r}) = r$$, and $$\zeta \in \mathbb{C}^{d \times d}$$ is a full-rank PSD noise term with a fast decaying eigen-spectrum, significantly smaller than the leading eigenvalues of $$\rho_{\star, r}$$.
+In other words, we can well-approximate $$\rho_\star$$ with $$\rho_{\star, r}$$. For all cases, the noise is such that $$||e||_2 = 10^{-3}$$. The number of data points $$m$$ satisfy $$m = C_{\rm sam} \cdot r d$$, for various values of $$C_{\rm sam} > 0$$. 
 
-We consider two settings: $\rhoo$ is $(i)$ a pure state (\emph{i.e.}, $\text{rank}(\rhoo) = 1$) and, 
-$(ii)$ a nearly low-rank state.
-In the latter case, we construct $\rhoo = \rho_{\star, r} + \zeta$, where $\rho_{\star, r}$ is a rank-deficient PSD satisfying $\text{rank}(\rho_{\star, r}) = r$, and $\zeta \in \mathbb{C}^{d \times d}$ is a full-rank PSD noise term with a fast decaying eigen-spectrum, significantly smaller than the leading eigenvalues of $\rho_{\star, r}$.
-In other words, we can well-approximate $\rhoo$ with $\rho_{\star, r}$. For all cases, the noise is such that $\|e\| = 10^{-3}$. The number of data points $m$ satisfy $m = C_{\rm sam} \cdot r d $, for various values of $C_{\rm sam} > 0$. 
+![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
 
-Table \ref{tbl:small_Comp} contains recovery error and execution time results for the case $n = 13$ ($d = 8192$); in this case, we solve a $d^2 = 67,108,864$ dimensional problem. 
-For this case, \texttt{RSVP} and \texttt{SparseApproxSDP} algorithms were excluded from the comparison, due to excessive execution time.
-Supplementary information Section~C provides extensive results, where similar performance is observed for other values of $d=2^n$ and $C_{\rm sam}$.
+*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
+
+The table above contains recovery error and execution time results for the case $$n = 13$$ ($$d = 8192$$); in this case, we solve a $$d^2 = 67,108,864$$ dimensional problem.  For this case, $$\texttt{RSVP}$$ and $$\texttt{SparseApproxSDP}$$ algorithms were excluded from the comparison, due to excessive execution time. 
 
 
-Table \ref{tbl:small_Comp2} considers the more general case where $\rhoo$ is nearly low-rank: \emph{i.e.}, it can be well-approximated by a density matrix $\rho_{\star, r}$ where $r=20$ (low-rank density matrix).
-In this case, $n = 12$ ($d = 4096$), $m = 245,760$ for $C_{\rm sam} = 3$. 
-As the rank in the model, $r$, increases, algorithms that utilize an SVD routine spend more CPU time on singular value/vector calculations. 
+![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
+
+*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
+
+The table above considers the more general case where $$\rho_\star$$ is nearly low-rank. In this case, $$n = 12$$ ($$d = 4096$$), $$m = 245,760$$ for $$C_{\rm sam} = 3$$.  As the rank in the model, $$r$$, increases, algorithms that utilize an SVD routine spend more CPU time on singular value/vector calculations. 
 Certainly, the same applies for matrix-matrix multiplications; however, in the latter case, the complexity scale is milder than that of the SVD calculations.  
 
-Overall, \texttt{ProjFGD} shows a substantial improvement in performance, as compared to the state-of-the-art algorithms; we would like to emphasize that projected gradient descent schemes, such as in Becker \emph{et al.}\cite{becker2013randomized}, are also efficient in small- to medium-sized problems, due to their
-fast convergence rate. 
-Further, convex approaches might show better sampling complexity performance (\emph{i.e.}, as $C_{\rm sam}$ decreases).
+Overall, $$\texttt{ProjFGD}$$ shows a substantial improvement in performance, as compared to the state-of-the-art algorithms; we would like to emphasize that projected gradient descent schemes, such as in Becker et al.[^becker2013randomized], are also efficient in small- to medium-sized problems, due to their
+fast convergence rate.  Further, convex approaches might show better sampling complexity performance (i.e., as $$C_{\rm sam}$$ decreases).
 Nevertheless, one can perform accurate maximum likelihood estimation for larger systems in the same amount of time using our methods for such small- to medium-sized problems.
 
 
-
-
 ## Conclusion
-With nowadays steadily growing quantum processors, it is required to develop new quantum
-tomography tools that are tailored for high-dimensional systems. In this work, we describe such
-a computational tool, based on recent ideas from non-convex optimization. The algorithm excels
-in the compressed-sensing-like setting, where only a few data points are measured from a lowrank or highly-pure quantum state of a high-dimensional system. We show that the algorithm can
-practically be used in quantum tomography problems that are beyond the reach of convex solvers,
-and, moreover, is faster than other state-of-the-art non-convex approaches. Crucially, we prove that,
-despite being a non-convex program, under mild conditions, the algorithm is guaranteed to converge
-to the global minimum of the problem; thus, it constitutes a provable quantum state tomography
-protocol.
+With nowadays steadily growing quantum processors, it is required to develop new quantum tomography tools that are tailored for high-dimensional systems. In this work, we describe such a computational tool, based on recent ideas from non-convex optimization. The algorithm excels in the compressed-sensing-like setting, where only a few data points are measured from a lowrank or highly-pure quantum state of a high-dimensional system. We show that the algorithm can practically be used in quantum tomography problems that are beyond the reach of convex solvers, and, moreover, is faster than other state-of-the-art non-convex approaches. Crucially, we prove that, despite being a non-convex program, under mild conditions, the algorithm is guaranteed to converge to the global minimum of the problem; thus, it constitutes a provable quantum state tomography protocol.
 
 
 
@@ -195,5 +187,10 @@ protocol.
 [^sun2015guaranteed]: Sun, R. & Luo, Z.-Q. Guaranteed matrix completion via nonconvex factorization. In IEEE Annual Symposium on Foundations of Computer Science, 270–289 (2015).
 
 [^liu2011universal]: Liu, Y.-K. Universal low-rank matrix recovery from Pauli measurements. In Advances in Neural Information Processing Systems, 1638–1646 (2011).
+
+[^yurtsever2015universal]:  Yurtsever, A., Dinh, Q. T. & Cevher, V. A universal primal-dual convex optimization framework. In Advances in Neural Information Processing Systems, 3150–3158 (2015).
+
+[^hazan2008sparse]: Hazan, E. Sparse approximate solutions to semidefinite programs. Lect. Notes Comput. Sci. 4957, 306–316 (2008).
+
 
 [back](./)
