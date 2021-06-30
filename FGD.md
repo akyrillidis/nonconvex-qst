@@ -2,14 +2,16 @@
 layout: default
 ---
 
-This blog post is about our previous work on quantum state tomography using non-convex programming.[^kyrillidis2018provable] This manuscript is on [arXiv](https://arxiv.org/pdf/1711.02524.pdf), but also published at [npj Quantum Information](https://www.nature.com/articles/s41534-018-0080-4) This is a joint work of [Prof. Tasos Kyrillidis](https://akyrillidis.github.io/about/) at Rice University, [Dr. Amir Kalev](https://scholar.google.com/citations?user=te_1dnAAAAAJ&hl=en) at USC, [Dr. Dohyung Park](), [Dr. Srinadh Bhojanapalli](https://bsrinadh.github.io/), [Dr. Constantine Caramanis](https://caramanis.github.io/) and [Dr. Sujay Sanghavi](http://users.ece.utexas.edu/~sanghavi/).
+This blog post is about our initial work on quantum state tomography using non-convex programming.[^kyrillidis2018provable] This manuscript is on [arXiv](https://arxiv.org/pdf/1711.02524.pdf), but also published at [npj Quantum Information](https://www.nature.com/articles/s41534-018-0080-4). This is a joint work of [Prof. Tasos Kyrillidis](https://akyrillidis.github.io/about/) at Rice University, [Dr. Amir Kalev](https://scholar.google.com/citations?user=te_1dnAAAAAJ&hl=en) at USC, [Dr. Dohyung Park](), [Dr. Srinadh Bhojanapalli](https://bsrinadh.github.io/), [Prof. Constantine Caramanis](https://caramanis.github.io/) and [Prof. Sujay Sanghavi](http://users.ece.utexas.edu/~sanghavi/).
 
 ## Introduction
 
 Like any other processor, the behavior of a quantum information processor must be characterized, verified, and certified. Quantum state tomography (QST) is one of
-the main tools for that purpose [1]. Yet, it is generally an inefficient procedure, since the number of parameters that specify quantum states, grows exponentially with the number of sub-systems. This inefficiency has two practical manifestations: (i) without any prior information, a vast number of data points needs to be collected [1]; (ii) once the data is gathered, a numerical procedure should be executed on an exponentially-high dimensional space, in order to infer the quantum state that is most consistent with the observations. Thus, to perform QST on nowadays steadily growing quantum processors [2, 3], we must introduce novel, more efficient, techniques for its completion. QST is generally not scalable due to two bottlenecks: $$i)$$ large data has to be collected to perform tomography; and $$ii)$$ the space of density matrices grows exponentially, from which the one that is consistent with the data has to be found.
+the main tools for that purpose[^altepeter2005photonic]. Yet, it is generally an inefficient procedure, since the number of parameters that specify quantum states, grows exponentially with the number of sub-systems. 
 
-To improve the efficiency of QST, we need to complement it with numerical algorithms that can efficiently handle large search spaces using limited amount of data, while having rigorous performance guarantees. This is the purpose of this work. Inspired by the recent advances on finding the global minimum in non-convex problems [24–38], we propose the application of alternating gradient descent in QST, that operates directly on the assumed low-rank structure of the density matrix. The algorithm –named Projected Factored Gradient Decent (ProjFGD) and described below in detail– is based on the recently analyzed non-convex method in [29] for PSD matrix factorization problems. The added twist is the inclusion of further constraints in the optimization program, that makes it applicable for tasks such as QST.
+This inefficiency has two practical manifestations: $(i)$ without any prior information, a vast number of data points needs to be collected[^altepeter2005photonic]; $(ii)$ once the data is gathered, a numerical procedure should be executed on an exponentially-high dimensional space, in order to infer the quantum state that is most consistent with the observations. Thus, to perform QST on nowadays steadily growing quantum processors, we must introduce novel, more efficient, techniques for its completion. 
+
+To improve the efficiency of QST, we need to complement it with numerical algorithms that can efficiently handle large search spaces using limited amount of data, while having rigorous performance guarantees. This is the purpose of this work. Inspired by the recent advances on finding the global minimum in non-convex problems[^bhojanapalli2016dropping][^chen2015fast][^ge2016matrix][^park2016finding][^park2016non][^sun2015guaranteed], we propose the application of alternating gradient descent in QST, that operates directly on the assumed low-rank structure of the density matrix. The algorithm –named Projected Factored Gradient Decent (ProjFGD)– is based on the recently analyzed non-convex method[^bhojanapalli2016dropping] for PSD matrix factorization problems. The added twist is the inclusion of further constraints in the optimization program, that makes it applicable for tasks such as QST.
 
 ## Problem setup
 We begin by describing  the problem of QST. 
@@ -225,7 +227,24 @@ protocol.
 
 [^recht2010guaranteed]: Benjamin Recht, Maryam Fazel, and Pablo A Parrilo. Guaranteed minimum-rank solutions of linear matrix equations via nuclear norm minimization. SIAM review, 52(3):471–501, 2010.
 
+[^altepeter2005photonic]: Altepeter, J., Jeffrey, E. & Kwiat, P. Photonic state tomography, advances in atomic. Mol. Opt. Phys. 52, 105–159 (2005).
 
+[^tu2015low]: Tu, S., Boczar, R., Simchowitz, M., Soltanolkotabi, M. & Recht, B. Low-rank solutions of linear matrix equations via Procrustesow. In Proceedings of International Conference on International Conference on Machine Learning. 48, 964–973 (2015).
 
+[^burer2003nonlinear]: Burer, S. & Monteiro, R. D. C. A nonlinear programming algorithm for solving semidefinite programs via low-rank factorization. Math. Program. 95, 329–357 (2003).
+
+[^becker2013randomized]: Becker, S., Cevher, V. & Kyrillidis, A. Randomized low-memory singular value projection. In 10th International Conference on Sampling Theory and Applications (Sampta), 364–367 (2013).
+
+[^bhojanapalli2016dropping]: Bhojanapalli, S., Kyrillidis, A. & Sanghavi, S. Dropping convexity for faster semidefinite op- timization. In 29th Annual Conference on Learning Theory, Proceedings of Machine Learning Research. 49, 530–582 (2016).
+
+[^chen2015fast]: Chen, Y. & Wainwright, M. Fast low-rank estimation by projected gradient descent: general statistical and algorithmic guarantees. Preprint at https://arxiv.org/abs/1509.03025 (2015).
+
+[^ge2016matrix]: Ge, R., Lee, J. & Ma, T. Matrix completion has no spurious local minimum, In Advances in Neural Information Processing Systems, 2973–2981 (2016).
+
+[^park2016finding]: Park, D., Kyrillidis, A., Caramanis, C. & Sanghavi, S. Finding low-rank solutions to matrix problems, eficiently and provably. Preprint at https://arxiv.org/abs/1606.03168 (2016).
+
+[^park2016non]: Park, D., Kyrillidis, A., Carmanis, C. & Sanghavi, S. Non-square matrix sensing without spurious local minima via the Burer–Monteiro approach. In Artificial Intelligence and Statistics, 65–74 (2016).
+
+[^sun2015guaranteed]: Sun, R. & Luo, Z.-Q. Guaranteed matrix completion via nonconvex factorization. In IEEE Annual Symposium on Foundations of Computer Science, 270–289 (2015).
 
 [back](./)
