@@ -17,24 +17,24 @@ To improve the efficiency of QST, we need to complement it with numerical algori
 We begin by describing the problem of QST. 
 We are focusing here on QST of a low-rank $$n$$-qubit state, $$\rho_{\star}$$, from measuring expectation values of $$n$$-qubit Pauli observables $$\{P_i\}_{i=1}^m$$. We denote by $$y \in \mathbb{R}^m$$  the measurement vector with elements $$y_i = \tfrac{2^n}{\sqrt{m}}\text{Tr}(P_i \cdot \rho_\star)+e_i,~i = 1, \dots, m$$, for some measurement error $$e_i$$. 
 The normalization $$\tfrac{2^n}{\sqrt{m}}$$ is chosen to follow the results of Liu[^liu2011universal].
-For brevity, we denote $$\mathcal{A} : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$$ as the linear "sensing" map, such that $$(\mathcal{A}(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$$, for $$i = 1, \dots, m$$. 
+For brevity, we denote $$\mathcal{M} : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$$ as the linear "sensing" map, such that $$(\mathcal{M}(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$$, for $$i = 1, \dots, m$$. 
 
 An $$n$$-qubit Pauli observable is given by $$P=\otimes_{j=1}^n s_j$$ where $$s_j\in\{\mathbb{1},\sigma_x,\sigma_y,\sigma_z\}$$.
 There are $$4^n$$ such observables in total. 
 In general, one needs to have the expectation values of all $$4^n$$ Pauli observables to uniquely reconstruct $$\rho_\star$$. However, since according to our assumption $$\rho_\star$$ is a low-rank quantum state, we can apply the CS result[^gross2010quantum] [^liu2011universal],  that guarantees a robust estimation, with high probability, from the measurement of the expectation values of just $$m={\cal O}(r 2^n n^6)$$ randomly chosen Pauli observables, where $$r\ll 2^n$$ is the rank of $$\rho_\star$$.
 
-For the _compressed sensing quantum state tomography_ setting, requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
+For the _compressed sensing quantum state tomography_ setting, requires the following pivotal assumption on the sensing matrix $$\mathcal{M}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
 
 \begin{align}
 \label{eq:rip} \tag{2}
-(1 - \delta_r) \cdot  || X ||_F^2 \leq || \mathcal{A}(X) ||_2^2 \leq (1 + \delta_r) \cdot ||X||_F^2.
+(1 - \delta_r) \cdot  || X ||_F^2 \leq || \mathcal{M}(X) ||_2^2 \leq (1 + \delta_r) \cdot ||X||_F^2.
 \end{align}
 
-Intuitively, the above RIP assumption states that the sensing matrices $$\mathcal{A}(\cdot)$$ only "marginally" changes the norm of the matrix $$X$$.
+The above condition should hold for all low-rank $$X$$ matrices.
+Intuitively, the above RIP assumption states that the sensing matrices $$\mathcal{M}(\cdot)$$ only "marginally" changes the norm of the matrix $$X$$.
 
-An accurate estimation of $\rhoo$ is obtained  by solving, essentially, a convex optimization problem constrained to the set of quantum states~\citep{kalev2015quantum}, consistent with the measured data.  
-Among the various problem formulations for QST, 
-two convex program examples are the trace-minimization program that is typically studied in the context of CS QST:
+## QST as an optimization problem
+An accurate estimation of $$\rho_\star$$ is obtained  by solving, essentially, a convex optimization problem constrained to the set of quantum states[^kalev2015quantum], consistent with the measured data.  Among the various problem formulations for QST,  two convex program examples are the trace-minimization program that is typically studied in the context of CS QST:
 \begin{equation}
 	\begin{aligned}
 		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
