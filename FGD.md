@@ -42,7 +42,7 @@ An accurate estimation of $$\rho_\star$$ is obtained  by solving, essentially, a
 		& & \text{Tr}(\rho) \\
 		& \text{subject to}
 		& & \rho \succeq 0, \\
-		& & & \|y - \mathcal{M}(\rho)\|_2 \leq \epsilon,
+		& & & ||y - \mathcal{M}(\rho)||_2 \leq \epsilon,
 	\end{aligned} \label{eq:CVX1}
 \end{equation}
 
@@ -51,7 +51,7 @@ and the least-squares program,
 \begin{equation}
 	\begin{aligned}
 		& \underset{\rho \in \mathbb{C}^{2^n \times 2^n}}{\text{minimize}}
-		& & \tfrac{1}{2} \cdot \|y - \mathcal{M}(\rho)\|_2^2 \\
+		& & \tfrac{1}{2} \cdot ||y - \mathcal{M}(\rho)||_2^2 \\
 		& \text{subject to}
 		& & \rho \succeq 0, \\
 		& & & \text{Tr}(\rho) \leq 1,
@@ -66,9 +66,9 @@ At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) alg
 \begin{equation}
 	\begin{aligned}
 		& \underset{A \in {\mathbb C}^{d \times r}}{\text{minimize}}
-		& & f(AA^\dagger) :=~ \tfrac{1}{2} \cdot \|y - \mathcal{M}(AA^\dagger)\|_2^2 \\
+		& & f(AA^\dagger) :=~ \tfrac{1}{2} \cdot ||y - \mathcal{M}(AA^\dagger)||_2^2 \\
 		& \text{subject to}
-		& & \|A\|_F^2 \leq 1.
+		& & ||A||_F^2 \leq 1.
 	\end{aligned} \label{eq:nonCVX}
 \end{equation}
 
@@ -83,7 +83,7 @@ At heart, $$\texttt{ProjFGD}$$ is a projected gradient descent algorithm over  t
 A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \gradf(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
 \end{equation} 
 
-where $$\Pi_\mathcal{C}(B)$$ denotes the projection of a matrix $$B \in \mathbb{C}^{d \times r}$$ onto the set $$\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~\|A\|_F^2 \leq 1\right\}$$.
+where $$\Pi_\mathcal{C}(B)$$ denotes the projection of a matrix $$B \in \mathbb{C}^{d \times r}$$ onto the set $$\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~||A||_F^2 \leq 1\right\}$$.
 $$\nabla f(\cdot): \mathbb{R}^{d \times d} \rightarrow \mathbb{R}^{d \times d}$$ denotes the gradient of the function $$f$$.
 
 Our theory dictates a specific constant step size selection, $$\eta$$, that guarantees convergence to the global minimum, assuming a satisfactory initial point $$\rho_0$$ is provided. More details on the theory are provided in our paper[^kyrillidis2018provable].
