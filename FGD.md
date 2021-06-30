@@ -96,10 +96,9 @@ First, we find that our initialization, as well as random initialization, works 
 #### Efficiency of $$\texttt{ProjFGD}$$ versus second-order cone programs
 State of the art solvers within this class of solvers are the SeDuMi and SDPT3 methods; for their use, we rely on the off-the-shelf Matlab wrapper $$\texttt{CVX}$$. In our experiments, we observed that SDPT3 was faster and we select it for our comparison. 
 
-![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
+![](/assets/img/projfgd1.png)
 
-*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
-
+![](/assets/img/projfgd2.png)
 
 The figures above show graphically how second-order convex vs. our first-order non-convex schemes scale. 
 We observe that, while in the $$\texttt{ProjFGD}$$ more observations lead to faster convergence, the same does not hold for the second-order cone programs.
@@ -108,7 +107,7 @@ We note that, as $$n$$ increases, a significant amount of time in our algorithm 
 assuming that the application of $$P_i$$'s takes the same amount of time as in CVX solvers, $$\texttt{ProjFGD}$$ requires much less additional computational power per iteration.
 
 
-#### Efficiency of $$\texttt{ProjFGD}$$ versus second-order cone programs
+#### Efficiency of $$\texttt{ProjFGD}$$ versus first-order methods
 We compare our method with more efficient first-order methods, both convex ($$\texttt{AccUniPDGrad}$$[^yurtsever2015universal]) and non-convex ($$\texttt{SparseApproxSDP}$$[^hazan2008sparse] and $$\texttt{RSVP}$$[^becker2013randomized]). 
 
 We consider two settings: $$\rho_\star$$ is $$(i)$$ a pure state (i.e., $$\text{rank}(\rho_\star) = 1$$) and, 
@@ -116,16 +115,11 @@ $$(ii)$$ a nearly low-rank state.
 In the latter case, we construct $$\rho_\star = \rho_{\star, r} + \zeta$$, where $$\rho_{\star, r}$$ is a rank-deficient PSD satisfying $$\text{rank}(\rho_{\star, r}) = r$$, and $$\zeta \in \mathbb{C}^{d \times d}$$ is a full-rank PSD noise term with a fast decaying eigen-spectrum, significantly smaller than the leading eigenvalues of $$\rho_{\star, r}$$.
 In other words, we can well-approximate $$\rho_\star$$ with $$\rho_{\star, r}$$. For all cases, the noise is such that $$||e||_2 = 10^{-3}$$. The number of data points $$m$$ satisfy $$m = C_{\rm sam} \cdot r d$$, for various values of $$C_{\rm sam} > 0$$. 
 
-![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
-
-*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
+![](/assets/img/projfgd3.png)
 
 The table above contains recovery error and execution time results for the case $$n = 13$$ ($$d = 8192$$); in this case, we solve a $$d^2 = 67,108,864$$ dimensional problem.  For this case, $$\texttt{RSVP}$$ and $$\texttt{SparseApproxSDP}$$ algorithms were excluded from the comparison, due to excessive execution time. 
 
-
-![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
-
-*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
+![](/assets/img/projfgd4.png)
 
 The table above considers the more general case where $$\rho_\star$$ is nearly low-rank. In this case, $$n = 12$$ ($$d = 4096$$), $$m = 245,760$$ for $$C_{\rm sam} = 3$$.  As the rank in the model, $$r$$, increases, algorithms that utilize an SVD routine spend more CPU time on singular value/vector calculations. 
 Certainly, the same applies for matrix-matrix multiplications; however, in the latter case, the complexity scale is milder than that of the SVD calculations.  
