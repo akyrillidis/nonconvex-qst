@@ -61,9 +61,8 @@ and the least-squares program,
 which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption. The solutions of these programs should be normalized to have unit trace to represent quantum states.
 
 ## Projected Factored Gradient Descent
-At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) algorithm transforms convex programs by enforcing the factorization of a $$d\times d$$ PSD matrix $$\rho$$ such that $$\rho = A A^\dagger$$, where $$d=2^n$$. This factorization naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. In order to encode the trace constraint, ProjFGD enforces additional constraints on $A$. 
-In particular, the requirement that $\tr(\rho) \leq 1$ is equivalently translated to the \emph{convex} constraint $\|A\|_F^2 \leq 1$, where $\|\cdot\|_F$ is the Frobenius norm. 
-The above recast the program~\eqref{eq:CVX2} as a non-convex program: 
+At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) algorithm transforms convex programs by enforcing the factorization of a $$d\times d$$ PSD matrix $$\rho$$ such that $$\rho = A A^\dagger$$, where $$d=2^n$$. This factorization naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. In order to encode the trace constraint, $$\texttt{ProjFGD}$$ enforces additional constraints on $$A$$: the requirement that $$\tr(\rho) \leq 1$$ is equivalently translated to the convex constraint $$\|A\|_F^2 \leq 1$$. The above recast QST as a non-convex program: 
+
 \begin{equation}
 	\begin{aligned}
 		& \underset{A \in {\mathbb C}^{d \times r}}{\text{minimize}}
@@ -72,59 +71,22 @@ The above recast the program~\eqref{eq:CVX2} as a non-convex program:
 		& & \|A\|_F^2 \leq 1.
 	\end{aligned} \label{eq:nonCVX}
 \end{equation}
-Given $\text{rank}(\rhoo) =  r$, programs \eqref{eq:CVX2} and \eqref{eq:nonCVX} are equivalent in the sense that the optimal value of \eqref{eq:CVX2} is identical to that of \eqref{eq:nonCVX}, by the relation $\rho=AA^\dagger$; however, program \eqref{eq:nonCVX} might have additional local solutions.
-Further, while the constraint set is convex, the objective is no longer convex due to the bilinear transformation of the parameter space $\rho = AA^\dagger$.
-Such criteria have been studied recently in machine learning and signal processing applications \citep{sun2015guaranteed, chen2015fast, tu2015low, bhojanapalli2016dropping, park2016non, ge2016matrix, park2016provable, park2016finding}.
-Here, the added twist is the inclusion of further matrix norm constraints, that makes it proper for tasks such as QST; as we show in  the Supplementary information Section~A, such addition complicates the algorithmic analysis.
 
-\emph{The \texttt{ProjFGD} algorithm and its guarantees:} 
-At heart, \texttt{ProjFGD} is a projected gradient descent algorithm over  the variable $A$; \emph{i.e.},
+While the constraint set is convex, the objective is no longer convex due to the bilinear transformation of the parameter space $$\rho = AA^\dagger$$.
+Here, the added twist is the inclusion of further matrix norm constraints, that makes it proper for tasks such as QST.
+
+#### The $$\texttt{ProjFGD}$$ algorithm and its guarantees
+
+At heart, $$\texttt{ProjFGD}$$ is a projected gradient descent algorithm over  the variable $$A$$; \emph{i.e.},
+
 \begin{equation}
 A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \gradf(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
 \end{equation} 
-where $\Pi_\mathcal{C}(B)$ denotes the projection of a matrix $B \in \mathbb{C}^{d \times r}$ onto the set $\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~\|A\|_F^2 \leq 1\right\}$.
-$\nabla f(\cdot): \mathbb{R}^{d \times d} \rightarrow \mathbb{R}^{d \times d}$ denotes the gradient of the function $f$.
-Specific details of the \texttt{ProjFGD} algorithm, along with a pseudocode implementation, are provided in the Method Section and in the Supplementary information Sections A and B. 
-Here, we focus on the theoretical guarantees of the \texttt{ProjFGD}.  
-In summary, our theory dictates a specific \emph{constant} step size selection, $\eta$, that guarantees convergence to the global minimum, assuming a satisfactory initial point $\rho_0$ is provided. 
 
-An important issue in optimizing \eqref{eq:nonCVX} over the factored space is the existence of non-unique possible factorizations for a given $\X$. 
-To see this, if $\X = AA^\dagger$, then for any unitary matrix $R \in \mathbb{C}^{r \times r}$ such that $RR^\dagger  = I$, we have $\X = \widehat{A} \widehat{A}^\dagger$, where $\widehat{A} = AR$.
-Since we are interested in obtaining a low-rank solution in the original space, we need a notion of distance to $\Xo$ over the factors. 
-We use the following unitary-invariant distance metric:
-\begin{definition}{\label{def:metric}}
-Let matrices $\A, \Ao \in \mathbb{C}^{d \times r}$. Define:
-\begin{align*}
-\dist\left(A, \Ao\right) :=\min_{R: R \in \mathcal{U}} \norm{A - \Ao R}_F, 
-\end{align*} where $\mathcal{U}$ is the set of $r \times r$ unitary matrices.
-\end{definition}
+where $$\Pi_\mathcal{C}(B)$$ denotes the projection of a matrix $$B \in \mathbb{C}^{d \times r}$$ onto the set $$\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~\|A\|_F^2 \leq 1\right\}$$.
+$$\nabla f(\cdot): \mathbb{R}^{d \times d} \rightarrow \mathbb{R}^{d \times d}$$ denotes the gradient of the function $$f$$.
 
-Let us first describe the local convergence rate guarantees of \texttt{ProjFGD}.
-\begin{theorem}[Local convergence rate for QST]\label{thm:main2}
-Let $\rhoo$ be a rank-$r$ quantum state density matrix of an $n$-qubit system with a non-unique factorization $\rho_\star = \Ao \Ao^{\dagger}$, for $\Ao \in \mathbb{C}^{2^n \times r}$. Let $y\in{\mathbb R}^m$ be the measurement vector of $m={\cal O}(r n^6 2^n)$ random $n$-qubit Pauli observables, and $\mathcal{M}$ be the corresponding sensing map, such that $y_i = \left(\mathcal{M}(\rhoo)\right)_i + e_i, ~\forall i = 1, \dots, m$. Let the step $\eta$ in \texttt{ProjFGD} satisfy:
-\begin{align}\label{eq:step_size}
-\eta \leq \tfrac{1}{128\left(\widehat{L} \sigma_1(\rho_0) + \sigma_1(\gradf(\rho_0))\right)},
-\end{align}
-where $\sigma_1(\rho)$ denotes the leading singular value of $\rho$.
-Here, $\widehat{L} \in (1,2)$ and $\rho_0 = \A_0 \A_0^\dagger$ is the initial point such that:
-\begin{align*}
-\dist(\U_0, \Uo) \leq \gamma' \sigma_{r}(\Uo),
-\end{align*}
-for $\gamma' := c \cdot \tfrac{(1-\delta_{4r})}{(1+\delta_{4r})} \cdot \tfrac{\sigma_r(\Xo)}{\sigma_1(\Xo)}, ~c \leq \tfrac{1}{200}$, where $\delta_{4r}$ is the RIP constant. 
-Let $\U_t$ be the estimate of \texttt{ProjFGD} at the $t$-th iteration.; then, the new estimate $\U_{t+1}$ satisfies
-\begin{equation}
-\dist(\U_{t+1}, \Uo)^2 \leq \alpha \cdot \dist(\U_t, \Uo)^2, \label{conv:eq_01}
-\end{equation}
-where $\alpha := 1 - \frac{(1 - \delta_{4r}) \cdot \sigma_r(\Xo)}{550((1+\delta_{4r}) \sigma_1(\Xo) + \|e\|_2)} < 1$. 
-Further, $\U_{t+1}$ satisfies $ \dist(\U_{t+1}, \Uo) \leq \gamma' \sigma_{r}(\Uo)$, $\forall t$.
-\end{theorem}
-
-The proof of Theorem~\ref{thm:main2} is provided in the Supplementary information Section~A. 
-The definitions of $L$ and $\widehat{L}$ can be found in the Methods Section; for our discussion, they can be assumed constants.
-The above theorem provides a \emph{local} convergence guarantee: 
-given an initialization point $\rho_0 = \A_0 \A_0^\dagger$ close enough to the optimal solution --in particular, where $\dist(\U_0, \Uo) \leq \gamma' \sigma_{r}(\Uo)$ is satisfied-- our algorithm converges locally with linear rate.
-In order to obtain $\dist(A_T, \Uo)^2 \leq \varepsilon$, \texttt{ProjFGD} requires $T = \mathcal{O}\left( \log \tfrac{\gamma' \cdot \sigma_r(\Uo)}{\varepsilon} \right)$ number of iterations.
-We conjecture that this further translates into linear convergence in the infidelity metric, $1-\tr(\sqrt{\sqrt{\rho_T}\rhoo\sqrt{\rho_T}})^2$.
+Our theory dictates a specific constant step size selection, $$\eta$$, that guarantees convergence to the global minimum, assuming a satisfactory initial point $$\rho_0$$ is provided. More details on the theory are provided in our paper[^kyrillidis2018provable].
 
 
 ## Results
