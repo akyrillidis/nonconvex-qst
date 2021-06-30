@@ -58,11 +58,7 @@ and the least-squares program,
 	\end{aligned} \label{eq:CVX2}
 \end{equation}
 
-which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption.
-The constraint $\rho \succeq 0$ captures the positive semi-definite assumption, $\|\cdot\|_2$ is the vector Euclidean $\ell_2$-norm, and $\epsilon >0$ is a parameter related to the error level in the model.
-Key in both programs is the combination of the PSD constraint and the trace object: combined, they constitute the tightest convex relaxation to the low-rank, PSD structure of the unknown $\rho_\star$; see also Recht \emph{et al.}\citep{recht2010guaranteed}.  
-The constraint $\text{Tr}(\rho) = 1$ is relaxed in~\eqref{eq:CVX2} to allow more robustness to noise, following Kalev \emph{et al.}\citep{kalev2015quantum}. The solutions of these programs should be normalized to have unit trace to represent quantum states.
-We note that if $\mathcal{M}$ corresponds to a positive-operator valued measure (POVM), or includes the identity operator, then the explicit trace constraint is redundant.
+which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption. The solutions of these programs should be normalized to have unit trace to represent quantum states.
 
 ## Projected Factored Gradient Descent
 At its basis, the Projected Factored Gradient Descent (\texttt{ProjFGD}) algorithm transforms convex programs, such as in \eqref{eq:CVX1}-\eqref{eq:CVX2}, by enforcing the factorization of a $d\times d$ PSD matrix $\rho$ such that $\rho = A A^\dagger$, where $d=2^n$. 
