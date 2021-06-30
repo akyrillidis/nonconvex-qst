@@ -21,6 +21,8 @@ For reproducility, we provide real quantum datasets:
 
 > Anastasios Kyrillidis, Amir Kalev, Dohyung Park, Srinadh Bhojanapalli, Constantine Caramanis, Sujay Sanghavi, [**``Provable compressed sensing quantum state tomography via non-convex methods''**](https://www.nature.com/articles/s41534-018-0080-4.pdf), npj Quantum Information volume 4, Article number: 36 (2018).
 >
+> Kelly Geyer, Anastasios Kyrillidis, Amir Kalev, [**''Low-rank regularization and solution uniqueness in over-parameterized matrix sensing''**](http://proceedings.mlr.press/v108/geyer20a.html), Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics, PMLR 108:930-940, 2020.
+>
 > Mitchell Roddenberry, Santiago Segarra, Anastasios Kyrillidis, [**''Rank-One Measurements of Low-Rank PSD Matrices Have Small Feasible Sets''**](https://arxiv.org/pdf/2012.09768.pdf), Arxiv Preprint, arXiv preprint arXiv:2012.09768 (2020).
 >
 > Junhyung Lyle Kim, George Kollias, Amir Kalev, Ken X. Wei, Anastasios Kyrillidis [**''Fast quantum state reconstruction via accelerated non-convex programming''**](https://arxiv.org/pdf/2104.07006.pdf), Sumitted, Arxiv Preprint, arXiv preprint arXiv:2104.07006, (2021).
