@@ -19,12 +19,11 @@ We are focusing here on QST of a low-rank $$n$$-qubit state, $$\rho_{\star}$$, f
 The normalization $$\tfrac{2^n}{\sqrt{m}}$$ is chosen to follow the results of Liu[^liu2011universal].
 For brevity, we denote $$\mathcal{A} : \mathbb{C}^{2^n \times 2^n} \rightarrow \mathbb{R}^m$ as the linear "sensing" map, such that $$(\mathcal{A}(\rho))_i = \tfrac{2^n}{\sqrt{m}} \text{Tr}(P_i \cdot \rho)$$, for $$i = 1, \dots, m$$. 
 
-An $n$-qubit Pauli observable is given by $P=\otimes_{j=1}^n s_j$ where $s_j\in\{\mathbb{1},\sigma_x,\sigma_y,\sigma_z\}$.
-There are $4^n$ such observables in total. 
-In general, one needs to have the expectation values of all $4^n$ Pauli observables to uniquely reconstruct $\rho_\star$. However, since according to our assumption $\rho_\star$ is a low-rank quantum state, we can apply the CS result~\citep{gross2010quantum, liu2011universal},  that guarantees a robust estimation, with high probability, from the measurement of the expectation values of just $m={\cal O}(r 2^n n^6)$ randomly chosen Pauli observables, where $r\ll 2^n$ is the rank of $\rho_\star$.
+An $$n$$-qubit Pauli observable is given by $$P=\otimes_{j=1}^n s_j$$ where $$s_j\in\{\mathbb{1},\sigma_x,\sigma_y,\sigma_z\}$$.
+There are $$4^n$$ such observables in total. 
+In general, one needs to have the expectation values of all $$4^n$$ Pauli observables to uniquely reconstruct $$\rho_\star$$. However, since according to our assumption $$\rho_\star$$ is a low-rank quantum state, we can apply the CS result[^gross2010quantum][^liu2011universal],  that guarantees a robust estimation, with high probability, from the measurement of the expectation values of just $$m={\cal O}(r 2^n n^6)$$ randomly chosen Pauli observables, where $$r\ll 2^n$$ is the rank of $$\rho_\star$$.
 
-
-As mentioned earlier, we focus on _compressed sensing quantum state tomography_ setting, where the number of measured data $$m$$ is much smaller than the problem dimension $$O(d^2)$$. Compressed sensing is a powerful optimization framework developed mainly by [Emmanuel Candès](https://statweb.stanford.edu/~candes/), [Justin Romberg](https://jrom.ece.gatech.edu/), [Terence Tao](https://www.math.ucla.edu/~tao/) and [David Donoho](https://web.stanford.edu/dept/statistics/cgi-bin/donoho/), and requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
+For the _compressed sensing quantum state tomography_ setting, requires the following pivotal assumption on the sensing matrix $$\mathcal{A}(\cdot)$$, namely the **Restricted Isometry Property (RIP)** (on $$\texttt{rank}$$-$$r$$ matrices): [^recht2010guaranteed]
 
 \begin{align}
 \label{eq:rip} \tag{2}
