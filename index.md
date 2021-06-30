@@ -26,4 +26,6 @@ For reproducility, we provide real quantum datasets:
 > Mitchell Roddenberry, Santiago Segarra, Anastasios Kyrillidis, [**''Rank-One Measurements of Low-Rank PSD Matrices Have Small Feasible Sets''**](https://arxiv.org/pdf/2012.09768.pdf), Arxiv Preprint, arXiv preprint arXiv:2012.09768 (2020).
 >
 > Junhyung Lyle Kim, George Kollias, Amir Kalev, Ken X. Wei, Anastasios Kyrillidis [**''Fast quantum state reconstruction via accelerated non-convex programming''**](https://arxiv.org/pdf/2104.07006.pdf), Sumitted, Arxiv Preprint, arXiv preprint arXiv:2104.07006, (2021).
+>
+>  Junhyung Lyle Kim, Jose Antonio Lara Benitez, Mohammad Taha Toghani, Cameron Wolfe, Zhiwei Zhang, Anastasios Kyrillidis [**''Momentum-inspired Low-Rank Coordinate Descent for Diagonally Constrained SDPs''**](https://arxiv.org/pdf/2106.08775), Sumitted, Arxiv Preprint, arXiv preprint arXiv:2106.08775, (2021).
 
