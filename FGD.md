@@ -61,7 +61,7 @@ and the least-squares program,
 which is closely related to the (negative) log-likelihood minimization under Gaussian noise assumption. The solutions of these programs should be normalized to have unit trace to represent quantum states.
 
 ## Projected Factored Gradient Descent
-At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) algorithm transforms convex programs by enforcing the factorization of a $$d\times d$$ PSD matrix $$\rho$$ such that $$\rho = A A^\dagger$$, where $$d=2^n$$. This factorization naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. In order to encode the trace constraint, $$\texttt{ProjFGD}$$ enforces additional constraints on $$A$$: the requirement that $$\tr(\rho) \leq 1$$ is equivalently translated to the convex constraint $$\|A\|_F^2 \leq 1$$. The above recast QST as a non-convex program: 
+At its basis, the Projected Factored Gradient Descent ($$\texttt{ProjFGD}$$) algorithm transforms convex programs by enforcing the factorization of a $$d\times d$$ PSD matrix $$\rho$$ such that $$\rho = A A^\dagger$$, where $$d=2^n$$. This factorization naturally encodes the PSD constraint, removing the expensive eigen-decomposition projection step. In order to encode the trace constraint, $$\texttt{ProjFGD}$$ enforces additional constraints on $$A$$: the requirement that $$\text{Tr}(\rho) \leq 1$$ is equivalently translated to the convex constraint $$\|A\|_F^2 \leq 1$$. The above recast QST as a non-convex program: 
 
 \begin{equation}
 	\begin{aligned}
@@ -80,7 +80,7 @@ Here, the added twist is the inclusion of further matrix norm constraints, that 
 At heart, $$\texttt{ProjFGD}$$ is a projected gradient descent algorithm over  the variable $$A$$; \emph{i.e.},
 
 \begin{equation}
-A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \gradf(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
+A_{t+1} = \Pi_{\mathcal{C}}\left(A_t - \eta \nabla f(A_t A_t^\dagger)  \cdot A_t\right) \nonumber,
 \end{equation} 
 
 where $$\Pi_\mathcal{C}(B)$$ denotes the projection of a matrix $$B \in \mathbb{C}^{d \times r}$$ onto the set $$\mathcal{C} = \left\{ A : A \in \mathbb{C}^{d \times r}, ~||A||_F^2 \leq 1\right\}$$.
@@ -90,25 +90,27 @@ Our theory dictates a specific constant step size selection, $$\eta$$, that guar
 
 
 ## Results
-Our experiments follow the discussion above. 
-We find that our initialization, as well as random initialization, works well in practice, and this behavior has been observed repeatedly in all the experiments we conducted. Thus, the method returns the exact solution of the convex programming problem, while being orders of magnitude faster than state-of-the-art optimization programs.
+First, we find that our initialization, as well as random initialization, works well in practice, and this behavior has been observed repeatedly in all the experiments we conducted. Thus, the method returns the exact solution of the convex programming problem, while being orders of magnitude faster than state-of-the-art optimization programs.
 
 
-As a first set of experiments, we compare the efficiency of \texttt{ProjFGD} with \emph{second-order} cone convex programs.
-State of the art solvers within this class of solvers are the SeDuMi and SDPT3 methods; for their use, we rely on the off-the-shelf Matlab wrapper \texttt{CVX} \citep{cvx}.
-In our experiments, we observed that SDPT3 was faster and we select it for our comparison.
-The setting is as described in the Results Section, where additive noise has variance $\sigma$, \emph{i.e.}, $\sim \mathcal{CN}(0, \sigma \cdot I)$.
+#### Efficiency of $$\texttt{ProjFGD}$$ versus second-order cone programs
+State of the art solvers within this class of solvers are the SeDuMi and SDPT3 methods; for their use, we rely on the off-the-shelf Matlab wrapper $$\texttt{CVX}$$. In our experiments, we observed that SDPT3 was faster and we select it for our comparison. 
 
-Figures \ref{fig:time_vs_measurements}-\ref{fig:time_vs_dimensions} show graphically how second-order convex vs. our first-order non-convex schemes scale. %, as a function of time.
-In Figure \ref{fig:time_vs_measurements}, we observe that, while in the \texttt{ProjFGD} more observations lead to faster convergence \citep{chandrasekaran2013computational}, the same does not hold for the second-order cone programs.
-In Figure \ref{fig:time_vs_dimensions}, it is obvious that the convex solvers do not scale easily beyond $n = 7$, whereas our method handles cases up to $n = 13$, within reasonable time.
-We note that, as $n$ increases, a significant amount of time in our algorithm is spent forming the Pauli measurement vectors $P_i$; \emph{i.e.}, 
-assuming that the application of $P_i$'s takes the same amount of time as in CVX solvers, \texttt{ProjFGD} requires much less additional computational power per iteration, compared to \texttt{CVX 1} and \texttt{CVX 2}. 
+![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
+
+*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
 
 
+The figures above show graphically how second-order convex vs. our first-order non-convex schemes scale. 
+We observe that, while in the $$\texttt{ProjFGD}$$ more observations lead to faster convergence, the same does not hold for the second-order cone programs.
+It is obvious that the convex solvers do not scale easily beyond $$n = 7$$, whereas our method handles cases up to $$n = 13$$, within reasonable time.
+We note that, as $$n$$ increases, a significant amount of time in our algorithm is spent forming the Pauli measurement vectors $$P_i$$; \emph{i.e.}, 
+assuming that the application of $$P_i$$'s takes the same amount of time as in CVX solvers, $$\texttt{ProjFGD}$$ requires much less additional computational power per iteration.
+
+
+#### Efficiency of $$\texttt{ProjFGD}$$ versus second-order cone programs
 
 We compare our method with more efficient first-order methods, both convex (\texttt{AccUniPDGrad}~\cite{yurtsever2015universal}) and non-convex (\texttt{SparseApproxSDP}~\cite{hazan2008sparse} and \texttt{RSVP}~\cite{becker2013randomized}); we briefly describe these methods in the Discussion Section.
-
 
 We consider two settings: $\rhoo$ is $(i)$ a pure state (\emph{i.e.}, $\text{rank}(\rhoo) = 1$) and, 
 $(ii)$ a nearly low-rank state.
@@ -130,21 +132,8 @@ fast convergence rate.
 Further, convex approaches might show better sampling complexity performance (\emph{i.e.}, as $C_{\rm sam}$ decreases).
 Nevertheless, one can perform accurate maximum likelihood estimation for larger systems in the same amount of time using our methods for such small- to medium-sized problems.
 
-![MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).](/assets/img/ibm-data.png)
-
-*MiFGD performance on real quantum data from IBM QPU. Top-left: GHZminus(6), Top-right: GHZminus(8), Bottom-left: Hadamard(6), Bottom-right: Hadamard(8).*
 
 
-
-
-#### Performance comparison with QST methods in $\texttt{Qiskit}$
-
-
-
-#### Performance comparison with neural-network QST using $$\texttt{Qucumber}$$
-
-
-#### The effect of parallelization in $$\texttt{MiFGD}$$
 
 ## Conclusion
 With nowadays steadily growing quantum processors, it is required to develop new quantum
